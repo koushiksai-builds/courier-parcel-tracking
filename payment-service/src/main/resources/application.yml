@@ -1,0 +1,15 @@
+server:
+  port: ${PORT:8086}
+spring:
+  application.name: payment-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/courier_users}
+    username: ${DB_USER:courier}
+    password: ${DB_PASSWORD:courier}
+  jpa:
+    hibernate.ddl-auto: update
+    open-in-view: false
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+payments:
+  demo-amount: ${PAYMENT_DEMO_AMOUNT:100.00}

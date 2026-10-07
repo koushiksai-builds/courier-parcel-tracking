@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Courier Parcel Tracking</title>
+  <style>
+    :root{font:16px system-ui,sans-serif;color:#1c2940;background:#f2f5fa}*{box-sizing:border-box}body{margin:0}header{background:#12243b;color:white;padding:20px max(5vw,20px);display:flex;justify-content:space-between;align-items:center}main{max-width:1100px;margin:28px auto;padding:0 18px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}.card{background:white;border:1px solid #dce3ed;border-radius:12px;padding:20px;box-shadow:0 5px 20px #17243b0a}h1{font-size:1.25rem;margin:0}h2{font-size:1.1rem;margin:0 0 14px}label{display:block;font-size:.88rem;margin:10px 0 4px}input,textarea,select{width:100%;padding:10px;border:1px solid #cbd4e1;border-radius:7px;font:inherit}button{margin-top:12px;padding:10px 14px;border:0;border-radius:7px;background:#2563eb;color:white;font:inherit;font-weight:600;cursor:pointer}button.secondary{background:#44546a}button:hover{filter:brightness(.93)}.row{display:flex;gap:8px}.row>*{flex:1}.muted{color:#637187;font-size:.9rem}.result{margin-top:12px;white-space:pre-wrap;overflow-wrap:anywhere}.hidden{display:none}.topline{display:flex;gap:14px;align-items:center}#message{position:sticky;top:0;padding:10px;text-align:center;background:#e0efff}.status{font-weight:700;color:#1754bb}ul{padding-left:20px}@media(max-width:600px){header{align-items:flex-start;gap:10px;flex-direction:column}}
+  </style>
+</head>
+<body>
+<header><h1>Courier Parcel Tracking</h1><div class="topline"><span id="identity">Not signed in</span><button id="logout" class="secondary hidden">Sign out</button></div></header>
+<div id="message" class="hidden"></div>
+<main>
+  <section id="auth" class="grid">
+    <article class="card"><h2>Sign in</h2><form id="login"><label>Email</label><input name="email" type="email" required><label>Password</label><input name="password" type="password" required><button>Sign in</button></form></article>
+    <article class="card"><h2>Create customer account</h2><form id="register"><label>Name</label><input name="name" required><label>Email</label><input name="email" type="email" required><label>Password (8+ characters)</label><input name="password" type="password" minlength="8" required><button>Create account</button></form></article>
+  </section>
+  <section id="customer" class="grid hidden">
+    <article class="card"><h2>Book a parcel</h2><form id="booking">
+      <label>Sender name</label><input name="senderName" required><label>Sender address</label><input name="senderAddress" required><label>Sender phone</label><input name="senderPhone" required>
+      <label>Receiver name</label><input name="receiverName" required><label>Receiver address</label><input name="receiverAddress" required><label>Receiver phone</label><input name="receiverPhone" required>
+      <label>Parcel description</label><input name="description" required><label>Expected delivery (optional)</label><input name="expectedDelivery" type="datetime-local"><button>Book parcel</button>
+    </form><div id="bookingResult" class="result"></div></article>
+    <article class="card"><h2>My parcels and notifications</h2><button id="refreshMine">Refresh</button><div id="mine" class="result"></div><div id="notifications" class="result"></div></article>
+  </section>
+  <section id="tracking" class="grid">
+    <article class="card"><h2>Track a parcel</h2><form id="track"><label>Tracking ID</label><input name="id" required placeholder="CP…"><button>Show status and history</button></form><div id="trackResult" class="result"></div></article>
+  </section>
+  <section id="staff" class="grid hidden">
+    <article class="card"><h2>Assigned parcels</h2><button id="refreshStaff">Refresh</button><div id="staffParcels" class="result"></div></article>
+    <article class="card"><h2>Update parcel status</h2><form id="statusForm"><label>Tracking ID</label><input name="trackingId" required><label>Status</label><select name="status"><option>PICKED_UP</option><option>IN_TRANSIT</option><option>OUT_FOR_DELIVERY</option><option>DELIVERY_FAILED</option><option>DELIVERED</option><option>EXCEPTION</option></select><label>Update note</label><input name="note" required><button>Save status</button></form></article>
+  </section>
+  <section id="admin" class="grid hidden">
+    <article class="card"><h2>Administration</h2><button id="refreshAdmin">Refresh dashboard</button><div id="adminData" class="result"></div></article>
+    <article class="card"><h2>Create courier account</h2><form id="courier"><label>Name</label><input name="name" required><label>Email</label><input name="email" type="email" required><label>Password (8+ characters)</label><input name="password" type="password" minlength="8" required><button>Create courier</button></form><p class="muted">Assign parcels through the API using the courier account ID.</p></article>
+  </section>
+</main>
+<script>
+let credentials=null, profile=null;
+const $=s=>document.querySelector(s);
+function say(text){const m=$('#message');m.textContent=text;m.classList.remove('hidden');setTimeout(()=>m.classList.add('hidden'),5000)}
+async function api(path,options={}){const headers={'Content-Type':'application/json',...(options.headers||{})};if(credentials)headers.Authorization='Basic '+btoa(credentials.email+':'+credentials.password);const r=await fetch('/api'+path,{...options,headers});const body=await r.text();if(!r.ok)throw Error(body||r.statusText);return body?JSON.parse(body):null}
+function formData(form){return Object.fromEntries(new FormData(form).entries())}
+function show(){const logged=!!profile;$('#auth').classList.toggle('hidden',logged);$('#logout').classList.toggle('hidden',!logged);$('#identity').textContent=logged?`${profile.name} · ${profile.role}`:'Not signed in';$('#customer').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#staff').classList.toggle('hidden',!logged||profile.role!=='COURIER');$('#admin').classList.toggle('hidden',!logged||profile.role!=='ADMIN')}
+$('#login').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget);credentials={email:d.email.toLowerCase(),password:d.password};try{profile=await api('/auth/login');show();say('Signed in');if(profile.role==='CUSTOMER')refreshMine();if(profile.role==='COURIER')refreshStaff()}catch(err){credentials=null;say('Sign in failed: '+err.message)}};
+$('#register').onsubmit=async e=>{e.preventDefault();try{const p=await api('/auth/register',{method:'POST',body:JSON.stringify(formData(e.currentTarget))});say(`Account created for ${p.email}. Sign in to continue.`);e.currentTarget.reset()}catch(err){say('Registration failed: '+err.message)}};
+$('#logout').onclick=()=>{credentials=null;profile=null;show()};
+$('#booking').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget);if(d.expectedDelivery)d.expectedDelivery=new Date(d.expectedDelivery).toISOString();else delete d.expectedDelivery;try{const p=await api('/parcels',{method:'POST',body:JSON.stringify(d)});$('#bookingResult').textContent='Booking created. Tracking ID: '+p.trackingId;e.currentTarget.reset();refreshMine()}catch(err){say('Booking failed: '+err.message)}};
+$('#track').onsubmit=async e=>{e.preventDefault();try{const d=formData(e.currentTarget),p=await api('/tracking/'+encodeURIComponent(d.id));$('#trackResult').textContent=JSON.stringify({trackingId:p.trackingId,status:p.status,expectedDelivery:p.expectedDelivery,history:p.history.map(h=>({...h,occurredAt:new Date(h.occurredAt).toLocaleString()}))},null,2)}catch(err){$('#trackResult').textContent='Tracking lookup failed: '+err.message}};
+async function refreshMine(){try{const [p,n]=await Promise.all([api('/parcels'),api('/parcels/notifications/mine')]);$('#mine').textContent=JSON.stringify(p,null,2);$('#notifications').textContent='Notifications\n'+JSON.stringify(n,null,2)}catch(e){say(e.message)}}
+async function refreshStaff(){try{$('#staffParcels').textContent=JSON.stringify(await api('/parcels'),null,2)}catch(e){say(e.message)}}
+$('#refreshMine').onclick=refreshMine;$('#refreshStaff').onclick=refreshStaff;
+$('#statusForm').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget),id=d.trackingId;delete d.trackingId;try{await api('/parcels/'+encodeURIComponent(id)+'/status',{method:'PUT',body:JSON.stringify(d)});say('Parcel status updated');refreshStaff()}catch(err){say('Update failed: '+err.message)}};
+$('#courier').onsubmit=async e=>{e.preventDefault();try{const u=await api('/admin/couriers',{method:'POST',body:JSON.stringify(formData(e.currentTarget))});say(`Courier created. Account ID: ${u.id}`);e.currentTarget.reset()}catch(err){say('Courier creation failed: '+err.message)}};
+$('#refreshAdmin').onclick=async()=>{try{const [users,parcels,delayed,exceptions,failed]=await Promise.all(['/admin/users','/admin/parcels','/admin/delayed','/admin/exceptions','/admin/events/failed'].map(p=>api(p)));$('#adminData').textContent=JSON.stringify({users,parcels,delayed,exceptions,failedEvents:failed},null,2)}catch(e){say(e.message)}};
+show();
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+server.port: ${PORT:8083}
+spring:
+  application.name: tracking-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/courier_users}
+    username: ${DB_USER:courier}
+    password: ${DB_PASSWORD:courier}
+  jpa.hibernate.ddl-auto: update
+  jpa.open-in-view: false
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    listener.simple.default-requeue-rejected: false
+    listener.simple.retry.enabled: true
+    listener.simple.retry.max-attempts: 5

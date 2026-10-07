@@ -1,0 +1,126 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: courier_users
+      MYSQL_USER: courier
+      MYSQL_PASSWORD: courier
+      MYSQL_ROOT_PASSWORD: root-change-me
+    ports: ["3307:3306"]
+    volumes: ["mysql-data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pcourier"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  database-setup:
+    image: mysql:8.4
+    depends_on:
+      mysql: {condition: service_healthy}
+    environment:
+      MYSQL_ROOT_PASSWORD: root-change-me
+    volumes:
+      - ./db/create-schemas.sql:/create-schemas.sql:ro
+    command: ["sh", "-c", "mysql -hmysql -uroot -p\"$$MYSQL_ROOT_PASSWORD\" < /create-schemas.sql"]
+    restart: "no"
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports: ["5672:5672", "15672:15672"]
+    healthcheck:
+      test: ["CMD", "rabbitmqadmin", "-H", "localhost", "-P", "15672", "-u", "guest", "-p", "guest", "list", "vhosts"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  user-service:
+    build:
+      context: .
+      args: {APP_MODULE: user-service}
+    depends_on:
+      database-setup: {condition: service_completed_successfully}
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/courier_users
+      DB_USER: courier
+      DB_PASSWORD: courier
+      ADMIN_EMAIL: admin@courier.local
+      ADMIN_PASSWORD: password
+
+  parcel-service:
+    build:
+      context: .
+      args: {APP_MODULE: parcel-service}
+    depends_on:
+      database-setup: {condition: service_completed_successfully}
+      rabbitmq: {condition: service_healthy}
+    environment: &service-env
+      DB_URL: jdbc:mysql://mysql:3306/courier_users
+      DB_USER: courier
+      DB_PASSWORD: courier
+      RABBIT_HOST: rabbitmq
+
+  tracking-service:
+    build:
+      context: .
+      args: {APP_MODULE: tracking-service}
+    depends_on:
+      database-setup: {condition: service_completed_successfully}
+      rabbitmq: {condition: service_healthy}
+    environment: *service-env
+
+  delivery-service:
+    build:
+      context: .
+      args: {APP_MODULE: delivery-service}
+    depends_on:
+      database-setup: {condition: service_completed_successfully}
+      rabbitmq: {condition: service_healthy}
+    environment: *service-env
+
+  notification-service:
+    build:
+      context: .
+      args: {APP_MODULE: notification-service}
+    depends_on:
+      database-setup: {condition: service_completed_successfully}
+      rabbitmq: {condition: service_healthy}
+    environment:
+      <<: *service-env
+      MAIL_ENABLED: ${MAIL_ENABLED:-false}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-noreply@courier.local}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
+      MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_SMTP_STARTTLS_ENABLE:-true}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8081}
+
+  payment-service:
+    build:
+      context: .
+      args: {APP_MODULE: payment-service}
+    depends_on:
+      database-setup: {condition: service_completed_successfully}
+      rabbitmq: {condition: service_healthy}
+    environment:
+      <<: *service-env
+      DB_URL: jdbc:mysql://mysql:3306/courier_users
+      PAYMENT_DEMO_AMOUNT: ${PAYMENT_DEMO_AMOUNT:-100.00}
+
+  gateway:
+    build:
+      context: .
+      args: {APP_MODULE: gateway}
+    depends_on:
+      - user-service
+      - parcel-service
+      - tracking-service
+      - delivery-service
+      - notification-service
+      - payment-service
+    ports: ["8081:8080"]
+
+volumes:
+  mysql-data:

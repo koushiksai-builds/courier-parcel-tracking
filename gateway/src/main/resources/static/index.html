@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Courier Parcel Tracking</title>
+<style type="text/css">/*<![CDATA[*/
+:root{
+  --bg:#f4f6fb;--surface:#fff;--ink:#14213d;--muted:#64748b;--line:#e3e8f0;
+  --primary:#4f46e5;--primary-2:#7c3aed;--accent:#06b6d4;--success:#10b981;--warn:#f59e0b;--danger:#ef4444;
+  --radius:16px;--shadow:0 1px 2px rgba(20,33,61,.05),0 10px 30px rgba(20,33,61,.07);
+  font:16px/1.5 "Inter","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:var(--ink);background:var(--bg)
+}
+*{box-sizing:border-box}body{margin:0;min-height:100vh}
+.hidden{display:none!important}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:rgba(15,23,42,.92);backdrop-filter:blur(10px);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+.nav{max-width:1180px;margin:auto;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--accent));box-shadow:0 6px 18px rgba(79,70,229,.45)}
+.brand h1{font-size:1.1rem;margin:0;font-weight:700;letter-spacing:.2px}
+.brand small{display:block;color:#94a3b8;font-size:.74rem;font-weight:500}
+.topline{display:flex;align-items:center;gap:12px}
+#identity{display:flex;align-items:center;gap:10px;font-size:.88rem;color:#cbd5e1}
+.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;font-weight:700;font-size:.85rem}
+.pill{font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.12);color:#e2e8f0}
+
+/* hero */
+.hero{background:radial-gradient(1200px 400px at 85% -10%,rgba(6,182,212,.35),transparent 60%),linear-gradient(135deg,#1e1b4b 0%,#312e81 45%,#4f46e5 100%);color:#fff;padding:56px 22px 90px}
+.hero-in{max-width:1180px;margin:auto}
+.hero h2{font-size:clamp(1.7rem,4vw,2.6rem);margin:0 0 10px;line-height:1.15;letter-spacing:-.02em}
+.hero p{margin:0;color:#c7d2fe;max-width:560px}
+main{max-width:1180px;margin:-56px auto 48px;padding:0 22px;display:grid;gap:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;align-items:start}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+.card h2{font-size:1.1rem;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+.card h2 .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#eef2ff;color:var(--primary)}
+.card .sub{margin:0 0 16px;color:var(--muted);font-size:.88rem}
+.span-2{grid-column:1/-1}
+
+/* forms */
+label{display:block;font-size:.8rem;font-weight:600;color:#334155;margin:14px 0 6px}
+input,textarea,select{width:100%;padding:11px 13px;border:1.5px solid #d6dde8;border-radius:10px;font:inherit;background:#fbfcfe;color:var(--ink);transition:border-color .15s,box-shadow .15s,background .15s}
+input::placeholder{color:#9aa7ba}
+input:hover,select:hover{border-color:#b6c2d4}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(79,70,229,.15)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.form-grid .full{grid-column:1/-1}
+fieldset{border:0;padding:0;margin:0}
+.section-title{grid-column:1/-1;margin:20px 0 0;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+
+/* buttons */
+button{margin-top:18px;padding:11px 20px;border:0;border-radius:10px;font:inherit;font-weight:600;font-size:.92rem;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));box-shadow:0 6px 16px rgba(79,70,229,.32);transition:transform .15s,box-shadow .15s,filter .15s}
+button:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(79,70,229,.4);filter:brightness(1.05)}
+button:active{transform:translateY(0)}
+button:focus-visible{outline:3px solid rgba(79,70,229,.4);outline-offset:2px}
+button.secondary{background:rgba(255,255,255,.12);box-shadow:none;margin:0;padding:8px 16px;border:1px solid rgba(255,255,255,.25)}
+button.secondary:hover{background:rgba(255,255,255,.22);transform:none;box-shadow:none}
+button.ghost{background:#eef2ff;color:var(--primary);box-shadow:none;margin:0 0 14px;padding:8px 14px}
+button.ghost:hover{background:#e0e7ff;box-shadow:none}
+button.success{background:linear-gradient(135deg,#059669,var(--success));box-shadow:0 6px 16px rgba(16,185,129,.32)}
+button.full{width:100%}
+button[disabled]{opacity:.6;pointer-events:none}
+.pw-wrap{display:flex;gap:8px;align-items:stretch}.pw-wrap input{flex:1;min-width:0}.pw-toggle{margin:0;padding:0 12px;background:#eef2ff;color:var(--primary);box-shadow:none;white-space:nowrap}
+
+/* tracking */
+.track-bar{display:flex;gap:10px;align-items:flex-end}
+.track-bar>div{flex:1}.track-bar label{margin-top:0}.track-bar button{margin:0;white-space:nowrap}.track-bar button.clear{background:#eef2ff;color:var(--primary);box-shadow:none}
+.result{margin-top:16px}
+.empty{padding:22px;border:1.5px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted);font-size:.9rem}
+.muted{color:var(--muted);font-size:.88rem}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;font-size:.72rem;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.b-BOOKED{background:#e0e7ff;color:#3730a3}.b-PICKED_UP{background:#cffafe;color:#0e7490}
+.b-IN_TRANSIT{background:#dbeafe;color:#1d4ed8}.b-OUT_FOR_DELIVERY{background:#fef3c7;color:#b45309}
+.b-DELIVERED{background:#d1fae5;color:#047857}.b-DELIVERY_FAILED{background:#ffedd5;color:#c2410c}.b-EXCEPTION{background:#fee2e2;color:#b91c1c}
+.b-CUSTOMER{background:#e0e7ff;color:#3730a3}.b-COURIER{background:#cffafe;color:#0e7490}.b-ADMIN{background:#f3e8ff;color:#7e22ce}
+
+/* parcel cards */
+.plist{display:grid;gap:12px}
+.parcel{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff;transition:border-color .15s,box-shadow .15s}
+.parcel.click{cursor:pointer}.parcel.click:hover{border-color:var(--primary);box-shadow:0 6px 18px rgba(79,70,229,.12)}
+.parcel-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.tid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;font-size:.9rem;color:var(--primary);background:#eef2ff;padding:3px 9px;border-radius:8px}
+.route{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;font-size:.86rem}
+.route b{display:block;font-size:.9rem}.route span{color:var(--muted);font-size:.8rem}
+.route .arrow{color:var(--accent);font-size:1.2rem}
+.meta{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:.8rem}
+
+/* timeline */
+.summary{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#eef2ff,#ecfeff);border:1px solid #dbe4ff;margin-bottom:18px}
+.timeline{list-style:none;margin:0;padding:0 0 0 6px;position:relative}
+.timeline::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--primary),var(--accent));opacity:.35}
+.timeline li{position:relative;padding:0 0 18px 34px}
+.timeline li::before{content:"";position:absolute;left:3px;top:4px;width:17px;height:17px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
+.timeline li.current::before{background:var(--primary);box-shadow:0 0 0 5px rgba(79,70,229,.18)}
+.timeline small{display:block;color:var(--muted);font-size:.78rem}
+
+/* notifications */
+.notes{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.notes li{display:flex;gap:10px;padding:11px 13px;border-radius:12px;background:#f8fafc;border:1px solid var(--line);font-size:.86rem}
+.notes li::before{content:"🔔";font-size:.95rem}
+.notes small{display:block;color:var(--muted)}
+h3{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+
+/* admin */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.stat{padding:16px;border-radius:14px;color:#fff}
+.stat b{display:block;font-size:1.8rem;line-height:1.1}.stat span{font-size:.78rem;opacity:.9;font-weight:600}
+.s1{background:linear-gradient(135deg,#4f46e5,#7c3aed)}.s2{background:linear-gradient(135deg,#0891b2,#06b6d4)}
+.s3{background:linear-gradient(135deg,#d97706,#f59e0b)}.s4{background:linear-gradient(135deg,#dc2626,#ef4444)}.s5{background:linear-gradient(135deg,#475569,#64748b)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th{background:#f8fafc;text-align:left;padding:10px 12px;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td{padding:10px 12px;border-top:1px solid var(--line)}
+tr:hover td{background:#fafbff}
+details{margin-top:14px}summary{cursor:pointer;font-weight:600;padding:8px 0}
+
+/* toast */
+#message{position:fixed;top:78px;right:20px;z-index:50;max-width:360px;padding:13px 18px;border-radius:12px;color:#fff;font-weight:600;font-size:.9rem;
+  background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 14px 34px rgba(0,0,0,.22);animation:slide .25s ease}
+#message.err{background:linear-gradient(135deg,#dc2626,#ef4444)}
+@keyframes slide{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 0 30px}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}.nav{flex-wrap:wrap}.track-bar{flex-direction:column;align-items:stretch}.route{grid-template-columns:1fr}.route .arrow{transform:rotate(90deg)}#message{left:14px;right:14px;max-width:none}}
+/*]]>*/</style>
+</head>
+<body>
+<header><div class="nav">
+  <div class="brand"><div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
+    <h1>Courier Parcel Tracking<small>Fast · Reliable · Real-time</small></h1></div>
+  <div class="topline"><span id="identity">Not signed in</span><button id="logout" class="secondary hidden">Sign out</button></div>
+</div></header>
+<div id="message" class="hidden"></div>
+
+<section class="hero"><div class="hero-in">
+  <h2>Ship smarter.<br />Track every step.</h2>
+  <p>Book parcels, follow their journey in real time and stay notified from pickup to delivery.</p>
+</div></section>
+
+<main>
+  <section id="tracking" class="grid">
+    <article class="card span-2">
+      <h2><span class="ic">🔍</span>Track a parcel</h2><p class="sub">Enter your tracking ID to see live status and full history.</p>
+      <form id="track"><div class="track-bar"><div><label>Tracking ID</label><input name="id" required="required" placeholder="CP…" /></div><button>Track parcel</button><button type="button" id="clearTrack" class="clear">Clear</button></div></form>
+      <div id="trackResult" class="result"></div>
+    </article>
+  </section>
+
+  <section id="auth" class="grid">
+    <article class="card"><h2><span class="ic">🔐</span>Sign in</h2><p class="sub">Welcome back — access your dashboard.</p>
+      <form id="login"><label>Email</label><input name="email" type="email" required="required" placeholder="you@example.com" /><label>Password</label><div class="pw-wrap"><input name="password" type="password" required="required" placeholder="••••••••" /><button type="button" class="pw-toggle" id="toggleLoginPassword" aria-label="Show password" aria-pressed="false">Show</button></div><button class="full">Sign in</button></form></article>
+    <article class="card"><h2><span class="ic">✨</span>Create customer account</h2><p class="sub">Start booking and tracking in under a minute.</p>
+      <form id="register"><label>Name</label><input name="name" required="required" placeholder="Your full name" /><label>Email</label><input name="email" type="email" required="required" placeholder="you@example.com" /><label>Password (8+ characters)</label><div class="pw-wrap"><input name="password" type="password" minlength="8" required="required" placeholder="At least 8 characters" /><button type="button" class="pw-toggle" id="toggleRegisterPassword" aria-label="Show password" aria-pressed="false">Show</button></div><button class="full success">Create account</button></form></article>
+  </section>
+
+  <section id="customer" class="grid hidden">
+    <article class="card"><h2><span class="ic">📦</span>Book a parcel</h2><p class="sub">Fill in sender, receiver and parcel details.</p>
+      <form id="booking"><div class="form-grid">
+        <div class="section-title">Sender</div>
+        <div class="full"><label>Sender name</label><input name="senderName" required="required" /></div>
+        <div><label>Sender phone</label><input name="senderPhone" required="required" /></div>
+        <div><label>Sender address</label><input name="senderAddress" required="required" /></div>
+        <div class="section-title">Receiver</div>
+        <div class="full"><label>Receiver name</label><input name="receiverName" required="required" /></div>
+        <div><label>Receiver phone</label><input name="receiverPhone" required="required" /></div>
+        <div><label>Receiver address</label><input name="receiverAddress" required="required" /></div>
+        <div class="section-title">Parcel</div>
+        <div class="full"><label>Parcel description</label><input name="description" required="required" /></div>
+        <div class="full"><label>Expected delivery (optional)</label><input name="expectedDelivery" type="datetime-local" /></div>
+      </div><button class="full">Book parcel</button></form><div id="bookingResult" class="result"></div></article>
+    <article class="card"><h2><span class="ic">🧾</span>My parcels &amp; notifications</h2><p class="sub">Everything you have shipped, in one place.</p>
+      <button id="refreshMine" class="ghost">↻ Refresh</button><div id="mine" class="result" style="margin-top:0"></div><h3>Notifications</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="clearNotifications" type="button" class="ghost">Clear notifications</button><button id="toggleNotificationHistory" type="button" class="ghost" aria-expanded="false">View history</button></div><div id="notifications" class="result" style="margin-top:0"></div><div id="notificationHistory" class="result hidden" style="margin-top:0"></div></article>
+  </section>
+
+  <section id="staff" class="grid hidden">
+    <article class="card"><h2><span class="ic">🚚</span>Assigned parcels</h2><p class="sub">Select a parcel to prefill the update form.</p>
+      <button id="refreshStaff" class="ghost">↻ Refresh</button><div id="staffParcels" class="result" style="margin-top:0"></div></article>
+    <article class="card"><h2><span class="ic">📝</span>Update parcel status</h2><p class="sub">Keep customers informed with every milestone.</p>
+      <form id="statusForm"><label>Tracking ID</label><input name="trackingId" required="required" /><label>Status</label><select name="status"><option>PICKED_UP</option><option>IN_TRANSIT</option><option>OUT_FOR_DELIVERY</option><option>DELIVERY_FAILED</option><option>DELIVERED</option><option>EXCEPTION</option></select><label>Update note</label><input name="note" required="required" placeholder="e.g. Arrived at sorting hub" /><button class="full">Save status</button></form></article>
+  </section>
+
+  <section id="admin" class="grid hidden">
+    <article class="card span-2"><h2><span class="ic">📊</span>Administration</h2><p class="sub">System overview and operational alerts.</p>
+      <button id="refreshAdmin" class="ghost">↻ Refresh dashboard</button>
+      <h3>Assign parcel to courier</h3><p class="sub">Couriers can update only parcels assigned to them.</p>
+      <form id="assignment" class="form-grid"><div><label>Parcel</label><select name="trackingId" id="assignmentParcel" required="required"><option value="">Refresh the dashboard to load parcels</option></select></div><div><label>Courier</label><select name="courierId" id="assignmentCourier" required="required"><option value="">Refresh the dashboard to load couriers</option></select></div><div class="full"><button class="full">Assign parcel</button></div></form>
+      <div id="adminData" class="result" style="margin-top:0"><div class="empty">Click “Refresh dashboard” to load data.</div></div></article>
+    <article class="card"><h2><span class="ic">👤</span>Create courier account</h2><p class="sub">Add a new delivery partner.</p>
+      <form id="courier"><label>Name</label><input name="name" required="required" /><label>Email</label><input name="email" type="email" required="required" /><label>Password (8+ characters)</label><input name="password" type="password" minlength="8" required="required" /><button class="full">Create courier</button></form>
+      <p class="muted" style="margin-top:14px">Assign a parcel to a courier below before the courier updates its status.</p></article>
+  </section>
+</main>
+<footer>© Courier Parcel Tracking · VIT-AP University</footer>
+
+<script type="text/javascript">//<![CDATA[
+
+let credentials=null, profile=null, adminUsers=[], adminParcels=[];
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=d=>d?new Date(d).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):'—';
+const label=s=>String(s||'').replace(/_/g,' ');
+const badge=s=>`<span class="badge b-${esc(s)}">${esc(label(s))}</span>`;
+const empty=t=>`<div class="empty">${esc(t)}</div>`;
+let toastTimer;
+function say(text,type){const m=$('#message');m.textContent=text;m.className=(type||(/fail|error|denied|invalid/i.test(text)?'err':''));clearTimeout(toastTimer);toastTimer=setTimeout(()=>m.classList.add('hidden'),5000)}
+async function api(path,options={}){const headers={'Content-Type':'application/json',...(options.headers||{})};if(credentials)headers.Authorization='Basic '+btoa(credentials.email+':'+credentials.password);const r=await fetch('/api'+path,{...options,headers});const body=await r.text();if(!r.ok){let message=`${r.status} ${r.statusText}`;try{const error=JSON.parse(body);message=error.message||error.detail||(error.error?`${error.status||r.status} ${error.error}`:message)}catch{}throw Error(message)}return body?JSON.parse(body):null}
+function formData(form){return Object.fromEntries(new FormData(form).entries())}
+async function busy(btn,fn){if(btn)btn.disabled=true;try{return await fn()}finally{if(btn)btn.disabled=false}}
+
+function parcelCard(p,clickable){return `<div class="parcel ${clickable?'click':''}" ${clickable?`data-id="${esc(p.trackingId)}"`:''}>
+  <div class="parcel-top"><span class="tid">${esc(p.trackingId)}</span>${badge(p.status)}</div>
+  <div class="route"><div><b>${esc(p.senderName)}</b><span>${esc(p.senderAddress)}</span></div><div class="arrow">→</div><div><b>${esc(p.receiverName)}</b><span>${esc(p.receiverAddress)}</span></div></div>
+  <div class="meta"><span>📦 ${esc(p.description)}</span><span>🕒 ETA: ${fmt(p.expectedDelivery)}</span>${p.courierId?`<span>🚚 Courier #${esc(p.courierId)}</span>`:''}</div></div>`}
+function parcelList(list,clickable){return list&&list.length?`<div class="plist">${list.map(p=>parcelCard(p,clickable)).join('')}</div>`:empty('No parcels yet.')}
+function notesList(list){return list&&list.length?`<ul class="notes">${list.map(n=>`<li><div>${esc(n.message)}<small>${esc(n.trackingId)} · ${fmt(n.createdAt)}</small></div></li>`).join('')}</ul>`:empty('No notifications yet.')}
+function table(cols,rows){return rows.length?`<div class="tablewrap"><table><thead><tr>${cols.map(c=>`<th>${esc(c[0])}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${c[1](r)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:empty('Nothing to show.')}
+
+function show(){const logged=!!profile;$('#auth').classList.toggle('hidden',logged);$('#logout').classList.toggle('hidden',!logged);
+  $('#identity').innerHTML=logged?`<span class="avatar">${esc(profile.name[0]||'?').toUpperCase()}</span><span>${esc(profile.name)}</span><span class="pill">${esc(profile.role)}</span>`:'Not signed in';
+  $('#customer').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#staff').classList.toggle('hidden',!logged||profile.role!=='COURIER');$('#admin').classList.toggle('hidden',!logged||profile.role!=='ADMIN')}
+
+$('#login').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget);credentials={email:d.email.toLowerCase(),password:d.password};await busy(e.submitter,async()=>{try{profile=await api('/auth/login');show();say('Signed in');if(profile.role==='CUSTOMER')refreshMine();if(profile.role==='COURIER')refreshStaff()}catch(err){credentials=null;say('Sign in failed: '+err.message)}})};
+$('#toggleLoginPassword').onclick=e=>{const input=$('#login [name=password]'),showPassword=input.type==='password';input.type=showPassword?'text':'password';e.currentTarget.textContent=showPassword?'Hide':'Show';e.currentTarget.setAttribute('aria-label',showPassword?'Hide password':'Show password');e.currentTarget.setAttribute('aria-pressed',String(showPassword))};
+$('#toggleRegisterPassword').onclick=e=>{const input=$('#register [name=password]'),showPassword=input.type==='password';input.type=showPassword?'text':'password';e.currentTarget.textContent=showPassword?'Hide':'Show';e.currentTarget.setAttribute('aria-label',showPassword?'Hide password':'Show password');e.currentTarget.setAttribute('aria-pressed',String(showPassword))};
+$('#register').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;await busy(e.submitter,async()=>{try{const p=await api('/auth/register',{method:'POST',body:JSON.stringify(formData(f))});say(`Account created for ${p.email}. Sign in to continue.`);f.reset()}catch(err){say('Registration failed: '+err.message)}})};
+$('#logout').onclick=()=>{credentials=null;profile=null;show();window.scrollTo({top:0,behavior:'smooth'})};
+async function showCheckout(trackingId){
+  const box=$('#bookingResult');
+  box.innerHTML=`<div class="summary"><div>✅ Booking created<br><span class="muted">Tracking ID: ${esc(trackingId)}</span></div></div><p class="muted">Preparing your payment order…</p>`;
+  let order=null,lastError=null;
+  for(let attempt=0;attempt<20&&!order;attempt++){
+    try{order=await api('/payments/'+encodeURIComponent(trackingId))}catch(err){lastError=err;await new Promise(resolve=>setTimeout(resolve,500))}
+  }
+  if(!order){box.insertAdjacentHTML('beforeend',`<p class="err">Could not load the payment order: ${esc(lastError?.message||'Please try again.')}</p><button type="button" class="ghost" id="retryPayment">Retry</button>`);$('#retryPayment').onclick=()=>showCheckout(trackingId);return}
+  const paid=order.status==='SUCCESS'||order.status==='CASH_ON_DELIVERY';
+  box.innerHTML=`<div class="summary"><div>✅ Booking created<br><span class="muted">Tracking ID: ${esc(trackingId)}</span></div></div>
+    <h3>Payment · ${esc(order.currency)} ${Number(order.amount).toFixed(2)}</h3>
+    <p class="muted">Demo checkout: online methods simulate success and do not charge a real account.</p>
+    ${paid?`<div class="summary"><b>${order.status==='SUCCESS'?'Payment successful':'Cash on delivery selected'}</b><span>${esc(label(order.method))} · ${esc(order.transactionReference)}</span></div>`:
+    `<form id="paymentForm"><label>Payment method</label><select name="method"><option value="UPI">UPI</option><option value="CARD">Credit or debit card</option><option value="WALLET">Wallet</option><option value="CASH_ON_DELIVERY">Cash on delivery</option></select><button class="full">Pay</button></form>`}`;
+  const form=$('#paymentForm');if(form)form.onsubmit=async event=>{event.preventDefault();await busy(event.submitter,async()=>{try{const result=await api('/payments/'+encodeURIComponent(trackingId)+'/pay',{method:'POST',body:JSON.stringify(formData(form))});showCheckoutResult(trackingId,result)}catch(err){say('Payment failed: '+err.message)}})};
+  refreshMine();
+}
+function showCheckoutResult(trackingId,payment){$('#bookingResult').innerHTML=`<div class="summary"><div>✅ Booking created<br><span class="muted">Tracking ID: ${esc(trackingId)}</span></div></div><h3>Payment · ${esc(payment.currency)} ${Number(payment.amount).toFixed(2)}</h3><div class="summary"><b>${payment.status==='SUCCESS'?'Payment successful':'Cash on delivery selected'}</b><span>${esc(label(payment.method))} · ${esc(payment.transactionReference)}</span></div><p class="muted">${payment.status==='SUCCESS'?'Demo payment recorded; no real funds were charged.':'Pay this amount to the courier on delivery.'}</p>`;refreshMine()}
+$('#booking').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,d=formData(f);if(d.expectedDelivery)d.expectedDelivery=new Date(d.expectedDelivery).toISOString();else delete d.expectedDelivery;await busy(e.submitter,async()=>{try{const p=await api('/parcels',{method:'POST',body:JSON.stringify(d)});f.reset();await showCheckout(p.trackingId)}catch(err){say('Booking failed: '+err.message)}})};
+$('#track').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget);await busy(e.submitter,async()=>{try{const p=await api('/tracking/'+encodeURIComponent(d.id));
+  $('#trackResult').innerHTML=`<div class="summary"><div><span class="tid">${esc(p.trackingId)}</span><div class="muted" style="margin-top:6px">Expected delivery: ${fmt(p.expectedDelivery)}</div></div>${badge(p.status)}</div>
+  <h3>Journey</h3>${p.history&&p.history.length?`<ul class="timeline">${p.history.map((h,i)=>`<li class="${i===p.history.length-1?'current':''}" ${i===p.history.length-1?'aria-current="step"':''}>${badge(h.status)} <b style="margin-left:6px">${esc(h.note)}</b><small>${fmt(h.occurredAt)}</small></li>`).join('')}</ul>`:empty('No history yet.')}`}
+  catch(err){$('#trackResult').innerHTML=empty('Tracking lookup failed: '+err.message)}})};
+$('#clearTrack').onclick=()=>{$('#track').reset();$('#trackResult').innerHTML='';$('#track input[name=id]').focus()};
+
+async function refreshMine(){try{const [p,n]=await Promise.all([api('/parcels'),api('/notifications/mine')]);$('#mine').innerHTML=parcelList(p);$('#notifications').innerHTML=notesList(n)}catch(e){say(e.message)}}
+$('#clearNotifications').onclick=async e=>{await busy(e.currentTarget,async()=>{try{const result=await api('/notifications/mine/clear',{method:'POST'});$('#notificationHistory').classList.remove('hidden');$('#toggleNotificationHistory').setAttribute('aria-expanded','true');$('#toggleNotificationHistory').textContent='Hide history';await loadNotificationHistory();await refreshMine();say(`${result.movedToHistory} notification(s) moved to history`)}catch(err){say('Could not clear notifications: '+err.message)}})};
+async function loadNotificationHistory(){try{$('#notificationHistory').innerHTML=notesList(await api('/notifications/history'))}catch(err){$('#notificationHistory').innerHTML=empty('Could not load notification history: '+err.message)}}
+$('#toggleNotificationHistory').onclick=async e=>{const box=$('#notificationHistory'),opening=box.classList.contains('hidden');box.classList.toggle('hidden',!opening);e.currentTarget.setAttribute('aria-expanded',String(opening));e.currentTarget.textContent=opening?'Hide history':'View history';if(opening)await loadNotificationHistory()};
+async function refreshStaff(){try{$('#staffParcels').innerHTML=parcelList(await api('/delivery/mine'),true)}catch(e){say(e.message)}}
+$('#refreshMine').onclick=refreshMine;$('#refreshStaff').onclick=refreshStaff;
+$('#staffParcels').onclick=e=>{const c=e.target.closest('.parcel[data-id]');if(c){$('#statusForm [name=trackingId]').value=c.dataset.id;$('#statusForm').scrollIntoView({behavior:'smooth',block:'center'});$('#statusForm [name=note]').focus()}};
+$('#statusForm').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget),id=d.trackingId;delete d.trackingId;await busy(e.submitter,async()=>{try{await api('/delivery/'+encodeURIComponent(id)+'/status',{method:'PUT',body:JSON.stringify(d)});say('Parcel status updated');refreshStaff()}catch(err){say('Update failed: '+err.message)}})};
+$('#courier').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;await busy(e.submitter,async()=>{try{const u=await api('/admin/couriers',{method:'POST',body:JSON.stringify(formData(f))});say(`Courier created. Account ID: ${u.id}`);f.reset()}catch(err){say('Courier creation failed: '+err.message)}})};
+$('#assignment').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget);await busy(e.submitter,async()=>{try{await api('/delivery/'+encodeURIComponent(d.trackingId)+'/assignment',{method:'PUT',body:JSON.stringify({courierId:Number(d.courierId)})});say('Parcel assigned to courier');await $('#refreshAdmin').click()}catch(err){say('Assignment failed: '+err.message)}})};
+$('#refreshAdmin').onclick=async e=>{await busy(e.currentTarget,async()=>{try{const [users,parcels,deliveries,delayed,exceptions,failed,payments]=await Promise.all(['/admin/users','/admin/parcels','/admin/deliveries','/admin/delayed','/admin/exceptions','/admin/events/failed','/payments/admin/all'].map(p=>api(p)));
+  adminUsers=users.filter(u=>u.role==='COURIER');const deliveryById=new Map(deliveries.map(d=>[d.trackingId,d]));adminParcels=parcels.map(p=>{const d=deliveryById.get(p.trackingId);return {...p,status:d?.status||p.status,courierId:d?.courierId??null}});
+  const delayedIds=new Set(delayed.map(d=>d.trackingId)),exceptionIds=new Set(exceptions.map(d=>d.trackingId));const delayedParcels=adminParcels.filter(p=>delayedIds.has(p.trackingId)),exceptionParcels=adminParcels.filter(p=>exceptionIds.has(p.trackingId));
+  $('#assignmentCourier').innerHTML=adminUsers.length?adminUsers.map(u=>`<option value="${esc(u.id)}">${esc(u.name)} (${esc(u.email)})</option>`).join(''):'<option value="">No couriers yet</option>';
+  $('#assignmentParcel').innerHTML=adminParcels.length?adminParcels.map(p=>`<option value="${esc(p.trackingId)}">${esc(p.trackingId)} · ${esc(p.status)}</option>`).join(''):'<option value="">No parcels yet</option>';
+  const stat=(c,n,l)=>`<div class="stat ${c}"><b>${n}</b><span>${l}</span></div>`;
+  const parcelCols=[['Tracking ID',r=>`<span class="tid">${esc(r.trackingId)}</span>`],['Status',r=>badge(r.status)],['Receiver',r=>esc(r.receiverName)],['ETA',r=>fmt(r.expectedDelivery)],['Courier',r=>{const c=adminUsers.find(u=>String(u.id)===String(r.courierId));return c?esc(c.name):(r.courierId?'#'+esc(r.courierId):'—')}]];
+  $('#adminData').innerHTML=`<div class="stats">${stat('s1',users.length,'Users')}${stat('s2',parcels.length,'Parcels')}${stat('s3',delayed.length,'Delayed')}${stat('s4',exceptions.length,'Exceptions')}${stat('s5',failed.length,'Failed events')}</div>
+  <details open><summary>Parcels</summary>${table(parcelCols,adminParcels)}</details>
+  <details><summary>Delayed parcels (${delayed.length})</summary>${table(parcelCols,delayedParcels)}</details>
+  <details><summary>Exceptions (${exceptions.length})</summary>${table(parcelCols,exceptionParcels)}</details>
+  <details><summary>Users (${users.length})</summary>${table([['ID',r=>esc(r.id)],['Name',r=>esc(r.name)],['Email',r=>esc(r.email)],['Role',r=>badge(r.role)]],users)}</details>
+  <details><summary>Payments (${payments.length})</summary>${table([['Tracking ID',r=>`<span class="tid">${esc(r.trackingId)}</span>`],['Amount',r=>`${esc(r.currency)} ${Number(r.amount).toFixed(2)}`],['Method',r=>esc(label(r.method))],['Status',r=>badge(r.status)],['Reference',r=>esc(r.transactionReference)]],payments)}</details>
+  <details><summary>Failed events (${failed.length})</summary>${table([['ID',r=>esc(r.id)],['Failed at',r=>fmt(r.failedAt)],['Attempts',r=>esc(r.attempts)],['Payload',r=>`<code>${esc(String(r.payload).slice(0,80))}</code>`]],failed)}</details>`}catch(err){say(err.message)}})};
+show();
+
+//]]></script>
+</body>
+</html>

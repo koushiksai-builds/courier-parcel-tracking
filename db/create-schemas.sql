@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS courier_users;
+CREATE DATABASE IF NOT EXISTS courier_parcels;
+CREATE DATABASE IF NOT EXISTS courier_tracking;
+CREATE DATABASE IF NOT EXISTS courier_delivery;
+CREATE DATABASE IF NOT EXISTS courier_notifications;
+CREATE DATABASE IF NOT EXISTS courier_payments;
+GRANT ALL PRIVILEGES ON courier_users.* TO 'courier'@'%';
+GRANT ALL PRIVILEGES ON courier_parcels.* TO 'courier'@'%';
+GRANT ALL PRIVILEGES ON courier_tracking.* TO 'courier'@'%';
+GRANT ALL PRIVILEGES ON courier_delivery.* TO 'courier'@'%';
+GRANT ALL PRIVILEGES ON courier_notifications.* TO 'courier'@'%';
+GRANT ALL PRIVILEGES ON courier_payments.* TO 'courier'@'%';
+FLUSH PRIVILEGES;
