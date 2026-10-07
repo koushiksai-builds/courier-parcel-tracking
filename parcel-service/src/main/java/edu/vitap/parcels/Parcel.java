@@ -3,7 +3,7 @@ import edu.vitap.common.ParcelStatus;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.time.Instant;
-@Entity @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY) @Table(name="parcels",schema="courier_parcels",indexes=@Index(columnList="trackingId",unique=true))
+@Entity @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY) @Table(name="parcels",catalog="courier_parcels",indexes=@Index(columnList="trackingId",unique=true))
 class Parcel {
  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) Long id;
  @Column(nullable=false,unique=true) String trackingId;

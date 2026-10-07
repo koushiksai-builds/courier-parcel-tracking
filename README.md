@@ -15,7 +15,7 @@ This is a Spring Boot microservices project based on the SRS. The services are b
 | Notification Service | Customer notifications and failed-event review/retry | 8085 | `courier_notifications` |
 | Payment Service | Customer payment orders, demo checkout, and admin payment history | 8086 | `courier_payments` |
 
-Each service is its own Maven module and Spring Boot application. The shared `common` module contains identity and event contracts. RabbitMQ publishes parcel events to the tracking, delivery, notification, and payment queues. The services use separate MySQL schemas; the User Service owns the user table.
+Each service is its own Maven module and Spring Boot application. The shared `common` module contains identity and event contracts. RabbitMQ publishes parcel events to the tracking, delivery, notification, and payment queues. Each service stores its tables in its own MySQL database; shared user lookups use `courier_users`.
 
 ## Run with Docker Desktop
 
@@ -96,7 +96,7 @@ Install Java 21, Maven, MySQL, and RabbitMQ. Create the six schemas listed above
 mvn -DskipTests package
 ```
 
-Run the services with their module-specific Spring configuration and environment variables. `DB_URL` should point at the `courier_users` database; each entity uses its owning schema. Set `RABBIT_HOST` for the parcel, tracking, delivery, and notification services.
+Run the services with their module-specific Spring configuration and environment variables. Set `DB_URL` to the service database: `courier_users` for users, `courier_parcels` for parcels, `courier_tracking` for tracking, `courier_delivery` for deliveries, `courier_notifications` for notifications, and `courier_payments` for payments. Shared user lookups use the `courier_users` database. Set `RABBIT_HOST` for services that publish or consume parcel events.
 
 ## SRS endpoint map
 

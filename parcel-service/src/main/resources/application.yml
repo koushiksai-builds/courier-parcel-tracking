@@ -3,7 +3,7 @@ server:
 spring:
   application.name: parcel-service
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/courier_users}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/courier_parcels}
     username: ${DB_USER:courier}
     password: ${DB_PASSWORD:courier}
   jpa:

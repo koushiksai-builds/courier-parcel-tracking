@@ -55,7 +55,7 @@ services:
       database-setup: {condition: service_completed_successfully}
       rabbitmq: {condition: service_healthy}
     environment: &service-env
-      DB_URL: jdbc:mysql://mysql:3306/courier_users
+      DB_URL: jdbc:mysql://mysql:3306/courier_parcels
       DB_USER: courier
       DB_PASSWORD: courier
       RABBIT_HOST: rabbitmq
@@ -67,7 +67,9 @@ services:
     depends_on:
       database-setup: {condition: service_completed_successfully}
       rabbitmq: {condition: service_healthy}
-    environment: *service-env
+    environment:
+      <<: *service-env
+      DB_URL: jdbc:mysql://mysql:3306/courier_tracking
 
   delivery-service:
     build:
@@ -76,7 +78,9 @@ services:
     depends_on:
       database-setup: {condition: service_completed_successfully}
       rabbitmq: {condition: service_healthy}
-    environment: *service-env
+    environment:
+      <<: *service-env
+      DB_URL: jdbc:mysql://mysql:3306/courier_delivery
 
   notification-service:
     build:
@@ -87,6 +91,7 @@ services:
       rabbitmq: {condition: service_healthy}
     environment:
       <<: *service-env
+      DB_URL: jdbc:mysql://mysql:3306/courier_notifications
       MAIL_ENABLED: ${MAIL_ENABLED:-false}
       MAIL_HOST: ${MAIL_HOST:-}
       MAIL_PORT: ${MAIL_PORT:-587}
@@ -106,7 +111,7 @@ services:
       rabbitmq: {condition: service_healthy}
     environment:
       <<: *service-env
-      DB_URL: jdbc:mysql://mysql:3306/courier_users
+      DB_URL: jdbc:mysql://mysql:3306/courier_payments
       PAYMENT_DEMO_AMOUNT: ${PAYMENT_DEMO_AMOUNT:-100.00}
 
   gateway:

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY)
-@Table(name="payments", schema="courier_payments", uniqueConstraints=@UniqueConstraint(columnNames="trackingId"))
+@Table(name="payments", catalog="courier_payments", uniqueConstraints=@UniqueConstraint(columnNames="trackingId"))
 class Payment {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) Long id;
     @Column(nullable=false,unique=true) String trackingId;

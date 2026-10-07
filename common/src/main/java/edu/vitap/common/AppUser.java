@@ -2,7 +2,7 @@ package edu.vitap.common;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity @Table(name="app_users", schema="courier_users")
+@Entity @Table(name="app_users", catalog="courier_users")
 public class AppUser {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
     @Column(nullable=false,unique=true) private String email;
