@@ -135,6 +135,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 0 30px}
 .quick-nav a:hover,.quick-nav a:focus-visible{background:#eef2ff;color:var(--primary);outline:none}
 .quick-nav a.nav-primary{background:var(--primary);color:#fff}
 section[id],article[id]{scroll-margin-top:132px}
+.support-view{grid-column:1/-1;width:min(100%,650px);justify-self:center}
 textarea{resize:vertical;min-height:110px}
 input[readonly]{background:#f1f5f9;color:#475569}
 input:disabled,select:disabled,textarea:disabled{opacity:.65;cursor:not-allowed}
@@ -151,8 +152,8 @@ input:disabled,select:disabled,textarea:disabled{opacity:.65;cursor:not-allowed}
 <nav class="quick-nav" aria-label="Main navigation"><div class="quick-nav-in">
   <a href="#tracking">Track parcel</a>
   <a href="#auth" id="navAuth" class="nav-primary">Sign in / Create account</a>
-  <a href="#customer" id="navCustomer" class="hidden">Book and my parcels</a>
-  <a href="#supportForm" id="navSupport" class="hidden">Customer support</a>
+  <a href="#customerDashboard" id="navCustomer" class="hidden">Book and my parcels</a>
+  <a href="#supportCard" id="navSupport" class="hidden">Customer support</a>
   <a href="#staff" id="navStaff" class="hidden">Courier workspace</a>
   <a href="#admin" id="navAdmin" class="hidden">Admin dashboard</a>
 </div></nav>
@@ -180,6 +181,7 @@ input:disabled,select:disabled,textarea:disabled{opacity:.65;cursor:not-allowed}
   </section>
 
   <section id="customer" class="grid hidden">
+    <div id="customerDashboard" class="grid span-2">
     <article class="card"><h2><span class="ic" aria-hidden="true">PK</span>Book a parcel</h2><p class="sub">Fill in sender, receiver and parcel details.</p>
       <form id="booking"><div class="form-grid">
         <div class="section-title">Sender</div>
@@ -201,7 +203,9 @@ input:disabled,select:disabled,textarea:disabled{opacity:.65;cursor:not-allowed}
     <article class="card"><h2><span class="ic" aria-hidden="true">MY</span>My parcels &amp; notifications</h2><p class="sub">Everything you have shipped, in one place.</p>
       <button id="refreshMine" class="ghost">↻ Refresh</button><div id="mine" class="result" style="margin-top:0"></div><h3>Notifications</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="clearNotifications" type="button" class="ghost">Clear notifications</button><button id="toggleNotificationHistory" type="button" class="ghost" aria-expanded="false">View history</button></div><div id="notifications" class="result" style="margin-top:0"></div><div id="notificationHistory" class="result hidden" style="margin-top:0"></div></article>
 
-    <article class="card"><h2><span class="ic" aria-hidden="true">?</span>Customer Support</h2><p class="sub">Tell our support team what happened with your parcel or booking.</p>
+    </div>
+    <article id="supportCard" class="card support-view hidden"><h2><span class="ic" aria-hidden="true">?</span>Customer Support</h2><p class="sub">Tell our support team what happened with your parcel or booking.</p>
+      <button id="backToCustomer" type="button" class="ghost">Back to dashboard</button>
       <form id="supportForm">
         <label>Your name</label><input name="name" required="required" readonly="readonly" />
         <label>Your email</label><input name="email" type="email" required="required" readonly="readonly" />
@@ -255,7 +259,7 @@ function parcelList(list,clickable){return list&&list.length?`<div class="plist"
 function notesList(list){return list&&list.length?`<ul class="notes">${list.map(n=>`<li><div>${esc(n.message)}<small>${esc(n.trackingId)} · ${fmt(n.createdAt)}</small></div></li>`).join('')}</ul>`:empty('No notifications yet.')}
 function table(cols,rows){return rows.length?`<div class="tablewrap"><table><thead><tr>${cols.map(c=>`<th>${esc(c[0])}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${c[1](r)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:empty('Nothing to show.')}
 
-function show(){const logged=!!profile;$('#auth').classList.toggle('hidden',logged);$('#logout').classList.toggle('hidden',!logged);$('#navAuth').classList.toggle('hidden',logged);$('#navCustomer').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#navSupport').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#navStaff').classList.toggle('hidden',!logged||profile.role!=='COURIER');$('#navAdmin').classList.toggle('hidden',!logged||profile.role!=='ADMIN');
+function show(){const logged=!!profile;if(!logged){$('#customerDashboard').classList.remove('hidden');$('#supportCard').classList.add('hidden')}$('#auth').classList.toggle('hidden',logged);$('#logout').classList.toggle('hidden',!logged);$('#navAuth').classList.toggle('hidden',logged);$('#navCustomer').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#navSupport').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#navStaff').classList.toggle('hidden',!logged||profile.role!=='COURIER');$('#navAdmin').classList.toggle('hidden',!logged||profile.role!=='ADMIN');
   $('#identity').innerHTML=logged?`<span class="avatar">${esc(profile.name[0]||'?').toUpperCase()}</span><span>${esc(profile.name)}</span><span class="pill">${esc(profile.role)}</span>`:'Not signed in';
   $('#customer').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');
   if(logged&&profile.role==='CUSTOMER'){$('#supportForm [name=name]').value=profile.name||'';$('#supportForm [name=email]').value=profile.email||''}$('#staff').classList.toggle('hidden',!logged||profile.role!=='COURIER');$('#admin').classList.toggle('hidden',!logged||profile.role!=='ADMIN')}
@@ -266,6 +270,15 @@ $('#toggleRegisterPassword').onclick=e=>{const input=$('#register [name=password
 $('#register').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;await busy(e.submitter,async()=>{try{const p=await api('/auth/register',{method:'POST',body:JSON.stringify(formData(f))});say(`Account created for ${p.email}. Sign in to continue.`);f.reset()}catch(err){say('Registration failed: '+err.message)}})};
 $('#supportForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,d=formData(f),result=$('#supportResult');await busy(e.submitter,async()=>{try{const response=await api('/support/contact',{method:'POST',body:JSON.stringify({name:d.name,email:d.email,trackingId:d.trackingId||null,message:d.message})});result.textContent=response.message;result.className='result muted';f.elements.message.value='';f.elements.trackingId.value='';say(response.message)}catch(err){const message='Your support request could not be sent right now. Please try again later.';result.textContent=message;result.className='result err';say(message,'err')}})};
 $('#logout').onclick=()=>{credentials=null;profile=null;show();window.scrollTo({top:0,behavior:'smooth'})};
+function showCustomerDashboard(){
+  $("#supportCard").classList.add("hidden");
+  $("#customerDashboard").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+$("#navCustomer").onclick=e=>{e.preventDefault();showCustomerDashboard()};
+$("#navSupport").onclick=e=>{e.preventDefault();$("#customerDashboard").classList.add("hidden");$("#supportCard").classList.remove("hidden");$("#supportCard").scrollIntoView({behavior:"smooth",block:"start"})};
+$("#backToCustomer").onclick=showCustomerDashboard;
+
 async function showCheckout(trackingId){
   const box=$('#bookingResult');
   box.innerHTML=`<div class="summary"><div>✅ Booking created<br><span class="muted">Tracking ID: ${esc(trackingId)}</span></div></div><p class="muted">Preparing your payment order…</p>`;
