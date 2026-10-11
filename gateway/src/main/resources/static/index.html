@@ -36,7 +36,7 @@ main{max-width:1180px;margin:-56px auto 48px;padding:0 22px;display:grid;gap:22p
 /* cards */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
 .card h2{font-size:1.1rem;margin:0 0 4px;display:flex;align-items:center;gap:10px}
-.card h2 .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#eef2ff;color:var(--primary)}
+.card h2 .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#eef2ff;color:var(--primary);font-size:.68rem;font-weight:800;letter-spacing:-.04em}
 .card .sub{margin:0 0 16px;color:var(--muted);font-size:.88rem}
 .span-2{grid-column:1/-1}
 
@@ -128,7 +128,18 @@ details{margin-top:14px}summary{cursor:pointer;font-weight:600;padding:8px 0}
 @keyframes slide{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
 
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 0 30px}
-@media(max-width:640px){.form-grid{grid-template-columns:1fr}.nav{flex-wrap:wrap}.track-bar{flex-direction:column;align-items:stretch}.route{grid-template-columns:1fr}.route .arrow{transform:rotate(90deg)}#message{left:14px;right:14px;max-width:none}}
+/* make the main actions easy to find on desktop and mobile */
+.quick-nav{position:sticky;top:69px;z-index:15;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);box-shadow:0 4px 14px rgba(20,33,61,.05)}
+.quick-nav-in{max-width:1180px;margin:auto;padding:8px 22px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin}
+.quick-nav a{flex:0 0 auto;padding:8px 13px;border-radius:9px;color:#334155;text-decoration:none;font-size:.86rem;font-weight:650}
+.quick-nav a:hover,.quick-nav a:focus-visible{background:#eef2ff;color:var(--primary);outline:none}
+.quick-nav a.nav-primary{background:var(--primary);color:#fff}
+section[id],article[id]{scroll-margin-top:132px}
+textarea{resize:vertical;min-height:110px}
+input[readonly]{background:#f1f5f9;color:#475569}
+input:disabled,select:disabled,textarea:disabled{opacity:.65;cursor:not-allowed}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}.nav{flex-wrap:wrap;padding:10px 14px}.quick-nav{top:64px}.quick-nav-in{padding:7px 14px}.hero{padding:38px 18px 78px}main{padding:0 14px;gap:14px}.grid{grid-template-columns:1fr;gap:14px}.card{padding:19px}.track-bar{flex-direction:column;align-items:stretch}.track-bar button{width:100%}.route{grid-template-columns:1fr}.route .arrow{transform:rotate(90deg);justify-self:center}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}#message{left:14px;right:14px;max-width:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 /*]]>*/</style>
 </head>
 <body>
@@ -137,7 +148,15 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 0 30px}
     <h1>Courier Parcel Tracking<small>Fast · Reliable · Real-time</small></h1></div>
   <div class="topline"><span id="identity">Not signed in</span><button id="logout" class="secondary hidden">Sign out</button></div>
 </div></header>
-<div id="message" class="hidden"></div>
+<nav class="quick-nav" aria-label="Main navigation"><div class="quick-nav-in">
+  <a href="#tracking">Track parcel</a>
+  <a href="#auth" id="navAuth" class="nav-primary">Sign in / Create account</a>
+  <a href="#customer" id="navCustomer" class="hidden">Book and my parcels</a>
+  <a href="#supportForm" id="navSupport" class="hidden">Customer support</a>
+  <a href="#staff" id="navStaff" class="hidden">Courier workspace</a>
+  <a href="#admin" id="navAdmin" class="hidden">Admin dashboard</a>
+</div></nav>
+<div id="message" class="hidden" role="status" aria-live="polite"></div>
 
 <section class="hero"><div class="hero-in">
   <h2>Ship smarter.<br />Track every step.</h2>
@@ -147,21 +166,21 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 0 30px}
 <main>
   <section id="tracking" class="grid">
     <article class="card span-2">
-      <h2><span class="ic">🔍</span>Track a parcel</h2><p class="sub">Enter your tracking ID to see live status and full history.</p>
+      <h2><span class="ic" aria-hidden="true">TR</span>Track a parcel</h2><p class="sub">Enter your tracking ID to see live status and full history.</p>
       <form id="track"><div class="track-bar"><div><label>Tracking ID</label><input name="id" required="required" placeholder="CP…" /></div><button>Track parcel</button><button type="button" id="clearTrack" class="clear">Clear</button></div></form>
       <div id="trackResult" class="result"></div>
     </article>
   </section>
 
   <section id="auth" class="grid">
-    <article class="card"><h2><span class="ic">🔐</span>Sign in</h2><p class="sub">Welcome back — access your dashboard.</p>
+    <article class="card"><h2><span class="ic" aria-hidden="true">IN</span>Sign in</h2><p class="sub">Welcome back — access your dashboard.</p>
       <form id="login"><label>Email</label><input name="email" type="email" required="required" placeholder="you@example.com" /><label>Password</label><div class="pw-wrap"><input name="password" type="password" required="required" placeholder="••••••••" /><button type="button" class="pw-toggle" id="toggleLoginPassword" aria-label="Show password" aria-pressed="false">Show</button></div><button class="full">Sign in</button></form></article>
-    <article class="card"><h2><span class="ic">✨</span>Create customer account</h2><p class="sub">Start booking and tracking in under a minute.</p>
+    <article class="card"><h2><span class="ic" aria-hidden="true">+</span>Create customer account</h2><p class="sub">Start booking and tracking in under a minute.</p>
       <form id="register"><label>Name</label><input name="name" required="required" placeholder="Your full name" /><label>Email</label><input name="email" type="email" required="required" placeholder="you@example.com" /><label>Password (8+ characters)</label><div class="pw-wrap"><input name="password" type="password" minlength="8" required="required" placeholder="At least 8 characters" /><button type="button" class="pw-toggle" id="toggleRegisterPassword" aria-label="Show password" aria-pressed="false">Show</button></div><button class="full success">Create account</button></form></article>
   </section>
 
   <section id="customer" class="grid hidden">
-    <article class="card"><h2><span class="ic">📦</span>Book a parcel</h2><p class="sub">Fill in sender, receiver and parcel details.</p>
+    <article class="card"><h2><span class="ic" aria-hidden="true">PK</span>Book a parcel</h2><p class="sub">Fill in sender, receiver and parcel details.</p>
       <form id="booking"><div class="form-grid">
         <div class="section-title">Sender</div>
         <div class="full"><label>Sender name</label><input name="senderName" required="required" /></div>
@@ -173,26 +192,40 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 0 30px}
         <div><label>Receiver address</label><input name="receiverAddress" required="required" /></div>
         <div class="section-title">Parcel</div>
         <div class="full"><label>Parcel description</label><input name="description" required="required" /></div>
+        <div><label>Weight (kg)</label><input name="weightKg" type="number" min="0.000001" step="any" required="required" placeholder="e.g. 2" /></div>
+        <div><label>Estimated route distance (km)</label><input name="distanceKm" type="number" min="0" step="any" required="required" placeholder="Enter estimated distance" /></div>
+        <div class="full"><label>Delivery speed</label><select name="deliverySpeed"><option value="STANDARD">Standard delivery</option><option value="SAME_DAY">Same-day delivery (+₹50)</option></select></div>
+        <div class="full"><div id="shippingQuote" class="result muted" aria-live="polite">Enter parcel weight and estimated route distance to calculate shipping.</div></div>
         <div class="full"><label>Expected delivery (optional)</label><input name="expectedDelivery" type="datetime-local" /></div>
       </div><button class="full">Book parcel</button></form><div id="bookingResult" class="result"></div></article>
-    <article class="card"><h2><span class="ic">🧾</span>My parcels &amp; notifications</h2><p class="sub">Everything you have shipped, in one place.</p>
+    <article class="card"><h2><span class="ic" aria-hidden="true">MY</span>My parcels &amp; notifications</h2><p class="sub">Everything you have shipped, in one place.</p>
       <button id="refreshMine" class="ghost">↻ Refresh</button><div id="mine" class="result" style="margin-top:0"></div><h3>Notifications</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="clearNotifications" type="button" class="ghost">Clear notifications</button><button id="toggleNotificationHistory" type="button" class="ghost" aria-expanded="false">View history</button></div><div id="notifications" class="result" style="margin-top:0"></div><div id="notificationHistory" class="result hidden" style="margin-top:0"></div></article>
-  </section>
+
+    <article class="card"><h2><span class="ic" aria-hidden="true">?</span>Customer Support</h2><p class="sub">Tell our support team what happened with your parcel or booking.</p>
+      <form id="supportForm">
+        <label>Your name</label><input name="name" required="required" readonly="readonly" />
+        <label>Your email</label><input name="email" type="email" required="required" readonly="readonly" />
+        <label>Parcel / Tracking ID (optional)</label><input name="trackingId" maxlength="80" placeholder="CP..." />
+        <label>Issue / Message</label><textarea name="message" rows="5" maxlength="4000" required="required" placeholder="Describe how we can help"></textarea>
+        <button class="full">Send support request</button>
+      </form><p id="supportResult" class="result muted" aria-live="polite"></p>
+    </article>
+</section>
 
   <section id="staff" class="grid hidden">
-    <article class="card"><h2><span class="ic">🚚</span>Assigned parcels</h2><p class="sub">Select a parcel to prefill the update form.</p>
+    <article class="card"><h2><span class="ic" aria-hidden="true">CR</span>Assigned parcels</h2><p class="sub">Select a parcel to prefill the update form.</p>
       <button id="refreshStaff" class="ghost">↻ Refresh</button><div id="staffParcels" class="result" style="margin-top:0"></div></article>
-    <article class="card"><h2><span class="ic">📝</span>Update parcel status</h2><p class="sub">Keep customers informed with every milestone.</p>
+    <article class="card"><h2><span class="ic" aria-hidden="true">UP</span>Update parcel status</h2><p class="sub">Keep customers informed with every milestone.</p>
       <form id="statusForm"><label>Tracking ID</label><input name="trackingId" required="required" /><label>Status</label><select name="status"><option>PICKED_UP</option><option>IN_TRANSIT</option><option>OUT_FOR_DELIVERY</option><option>DELIVERY_FAILED</option><option>DELIVERED</option><option>EXCEPTION</option></select><label>Update note</label><input name="note" required="required" placeholder="e.g. Arrived at sorting hub" /><button class="full">Save status</button></form></article>
   </section>
 
   <section id="admin" class="grid hidden">
-    <article class="card span-2"><h2><span class="ic">📊</span>Administration</h2><p class="sub">System overview and operational alerts.</p>
+    <article class="card span-2"><h2><span class="ic" aria-hidden="true">AD</span>Administration</h2><p class="sub">System overview and operational alerts.</p>
       <button id="refreshAdmin" class="ghost">↻ Refresh dashboard</button>
       <h3>Assign parcel to courier</h3><p class="sub">Couriers can update only parcels assigned to them.</p>
       <form id="assignment" class="form-grid"><div><label>Parcel</label><select name="trackingId" id="assignmentParcel" required="required"><option value="">Refresh the dashboard to load parcels</option></select></div><div><label>Courier</label><select name="courierId" id="assignmentCourier" required="required"><option value="">Refresh the dashboard to load couriers</option></select></div><div class="full"><button class="full">Assign parcel</button></div></form>
-      <div id="adminData" class="result" style="margin-top:0"><div class="empty">Click “Refresh dashboard” to load data.</div></div></article>
-    <article class="card"><h2><span class="ic">👤</span>Create courier account</h2><p class="sub">Add a new delivery partner.</p>
+      <div id="adminData" class="result" style="margin-top:0"><div class="empty">Click "Refresh dashboard" to load data.</div></div></article>
+    <article class="card"><h2><span class="ic" aria-hidden="true">CU</span>Create courier account</h2><p class="sub">Add a new delivery partner.</p>
       <form id="courier"><label>Name</label><input name="name" required="required" /><label>Email</label><input name="email" type="email" required="required" /><label>Password (8+ characters)</label><input name="password" type="password" minlength="8" required="required" /><button class="full">Create courier</button></form>
       <p class="muted" style="margin-top:14px">Assign a parcel to a courier below before the courier updates its status.</p></article>
   </section>
@@ -222,14 +255,16 @@ function parcelList(list,clickable){return list&&list.length?`<div class="plist"
 function notesList(list){return list&&list.length?`<ul class="notes">${list.map(n=>`<li><div>${esc(n.message)}<small>${esc(n.trackingId)} · ${fmt(n.createdAt)}</small></div></li>`).join('')}</ul>`:empty('No notifications yet.')}
 function table(cols,rows){return rows.length?`<div class="tablewrap"><table><thead><tr>${cols.map(c=>`<th>${esc(c[0])}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${c[1](r)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:empty('Nothing to show.')}
 
-function show(){const logged=!!profile;$('#auth').classList.toggle('hidden',logged);$('#logout').classList.toggle('hidden',!logged);
+function show(){const logged=!!profile;$('#auth').classList.toggle('hidden',logged);$('#logout').classList.toggle('hidden',!logged);$('#navAuth').classList.toggle('hidden',logged);$('#navCustomer').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#navSupport').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#navStaff').classList.toggle('hidden',!logged||profile.role!=='COURIER');$('#navAdmin').classList.toggle('hidden',!logged||profile.role!=='ADMIN');
   $('#identity').innerHTML=logged?`<span class="avatar">${esc(profile.name[0]||'?').toUpperCase()}</span><span>${esc(profile.name)}</span><span class="pill">${esc(profile.role)}</span>`:'Not signed in';
-  $('#customer').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');$('#staff').classList.toggle('hidden',!logged||profile.role!=='COURIER');$('#admin').classList.toggle('hidden',!logged||profile.role!=='ADMIN')}
+  $('#customer').classList.toggle('hidden',!logged||profile.role!=='CUSTOMER');
+  if(logged&&profile.role==='CUSTOMER'){$('#supportForm [name=name]').value=profile.name||'';$('#supportForm [name=email]').value=profile.email||''}$('#staff').classList.toggle('hidden',!logged||profile.role!=='COURIER');$('#admin').classList.toggle('hidden',!logged||profile.role!=='ADMIN')}
 
 $('#login').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget);credentials={email:d.email.toLowerCase(),password:d.password};await busy(e.submitter,async()=>{try{profile=await api('/auth/login');show();say('Signed in');if(profile.role==='CUSTOMER')refreshMine();if(profile.role==='COURIER')refreshStaff()}catch(err){credentials=null;say('Sign in failed: '+err.message)}})};
 $('#toggleLoginPassword').onclick=e=>{const input=$('#login [name=password]'),showPassword=input.type==='password';input.type=showPassword?'text':'password';e.currentTarget.textContent=showPassword?'Hide':'Show';e.currentTarget.setAttribute('aria-label',showPassword?'Hide password':'Show password');e.currentTarget.setAttribute('aria-pressed',String(showPassword))};
 $('#toggleRegisterPassword').onclick=e=>{const input=$('#register [name=password]'),showPassword=input.type==='password';input.type=showPassword?'text':'password';e.currentTarget.textContent=showPassword?'Hide':'Show';e.currentTarget.setAttribute('aria-label',showPassword?'Hide password':'Show password');e.currentTarget.setAttribute('aria-pressed',String(showPassword))};
 $('#register').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;await busy(e.submitter,async()=>{try{const p=await api('/auth/register',{method:'POST',body:JSON.stringify(formData(f))});say(`Account created for ${p.email}. Sign in to continue.`);f.reset()}catch(err){say('Registration failed: '+err.message)}})};
+$('#supportForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,d=formData(f),result=$('#supportResult');await busy(e.submitter,async()=>{try{const response=await api('/support/contact',{method:'POST',body:JSON.stringify({name:d.name,email:d.email,trackingId:d.trackingId||null,message:d.message})});result.textContent=response.message;result.className='result muted';f.elements.message.value='';f.elements.trackingId.value='';say(response.message)}catch(err){const message='Your support request could not be sent right now. Please try again later.';result.textContent=message;result.className='result err';say(message,'err')}})};
 $('#logout').onclick=()=>{credentials=null;profile=null;show();window.scrollTo({top:0,behavior:'smooth'})};
 async function showCheckout(trackingId){
   const box=$('#bookingResult');
@@ -249,7 +284,11 @@ async function showCheckout(trackingId){
   refreshMine();
 }
 function showCheckoutResult(trackingId,payment){$('#bookingResult').innerHTML=`<div class="summary"><div>✅ Booking created<br><span class="muted">Tracking ID: ${esc(trackingId)}</span></div></div><h3>Payment · ${esc(payment.currency)} ${Number(payment.amount).toFixed(2)}</h3><div class="summary"><b>${payment.status==='SUCCESS'?'Payment successful':'Cash on delivery selected'}</b><span>${esc(label(payment.method))} · ${esc(payment.transactionReference)}</span></div><p class="muted">${payment.status==='SUCCESS'?'Demo payment recorded; no real funds were charged.':'Pay this amount to the courier on delivery.'}</p>`;refreshMine()}
-$('#booking').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,d=formData(f);if(d.expectedDelivery)d.expectedDelivery=new Date(d.expectedDelivery).toISOString();else delete d.expectedDelivery;await busy(e.submitter,async()=>{try{const p=await api('/parcels',{method:'POST',body:JSON.stringify(d)});f.reset();await showCheckout(p.trackingId)}catch(err){say('Booking failed: '+err.message)}})};
+let quoteTimer;
+async function updateShippingQuote(){const form=$('#booking'),d=formData(form),box=$('#shippingQuote');if(!d.weightKg||d.distanceKm===''){box.textContent='Enter parcel weight and estimated route distance to calculate shipping.';return}if(!d.senderAddress?.trim()||!d.receiverAddress?.trim()){box.textContent='Enter pickup and delivery addresses to calculate shipping.';return}try{const q=await api('/parcels/calculate-cost',{method:'POST',body:JSON.stringify({source:d.senderAddress,destination:d.receiverAddress,weightKg:Number(d.weightKg),distanceKm:Number(d.distanceKm),deliverySpeed:d.deliverySpeed||'STANDARD'})});box.innerHTML=`<div class="summary"><div><b>Estimated shipping cost: ₹${Number(q.totalShippingCost).toFixed(2)}</b><small>Base ₹${Number(q.basePrice).toFixed(2)} · Weight ₹${Number(q.weightCharge).toFixed(2)} · Distance ₹${Number(q.distanceCharge).toFixed(2)} · ${esc(label(q.deliverySpeed))} ₹${Number(q.deliverySpeedCharge).toFixed(2)}</small></div></div>`}catch(err){box.textContent='Shipping estimate unavailable: '+err.message}}
+$('#booking').addEventListener('input',()=>{clearTimeout(quoteTimer);quoteTimer=setTimeout(updateShippingQuote,300)});
+$('#booking [name=deliverySpeed]').onchange=updateShippingQuote;
+$('#booking').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,d=formData(f);if(d.expectedDelivery)d.expectedDelivery=new Date(d.expectedDelivery).toISOString();else delete d.expectedDelivery;d.weightKg=Number(d.weightKg);d.distanceKm=Number(d.distanceKm);await busy(e.submitter,async()=>{try{const p=await api('/parcels',{method:'POST',body:JSON.stringify(d)});f.reset();$('#shippingQuote').textContent='Enter parcel weight and estimated route distance to calculate shipping.';await showCheckout(p.trackingId)}catch(err){say('Booking failed: '+err.message)}})};
 $('#track').onsubmit=async e=>{e.preventDefault();const d=formData(e.currentTarget);await busy(e.submitter,async()=>{try{const p=await api('/tracking/'+encodeURIComponent(d.id));
   $('#trackResult').innerHTML=`<div class="summary"><div><span class="tid">${esc(p.trackingId)}</span><div class="muted" style="margin-top:6px">Expected delivery: ${fmt(p.expectedDelivery)}</div></div>${badge(p.status)}</div>
   <h3>Journey</h3>${p.history&&p.history.length?`<ul class="timeline">${p.history.map((h,i)=>`<li class="${i===p.history.length-1?'current':''}" ${i===p.history.length-1?'aria-current="step"':''}>${badge(h.status)} <b style="margin-left:6px">${esc(h.note)}</b><small>${fmt(h.occurredAt)}</small></li>`).join('')}</ul>`:empty('No history yet.')}`}

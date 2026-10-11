@@ -46,6 +46,12 @@ services:
       DB_PASSWORD: courier
       ADMIN_EMAIL: admin@courier.local
       ADMIN_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/8081"]
+      interval: 10s
+      timeout: 3s
+      retries: 18
+      start_period: 120s
 
   parcel-service:
     build:
@@ -98,8 +104,11 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       MAIL_FROM: ${MAIL_FROM:-noreply@courier.local}
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
       MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
       MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_SMTP_STARTTLS_ENABLE:-true}
+      MAIL_RETRY_INTERVAL_MS: ${MAIL_RETRY_INTERVAL_MS:-60000}
+      MAIL_MAX_ATTEMPTS: ${MAIL_MAX_ATTEMPTS:-8}
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8081}
 
   payment-service:
@@ -119,12 +128,18 @@ services:
       context: .
       args: {APP_MODULE: gateway}
     depends_on:
-      - user-service
-      - parcel-service
-      - tracking-service
-      - delivery-service
-      - notification-service
-      - payment-service
+      user-service:
+        condition: service_healthy
+      parcel-service:
+        condition: service_started
+      tracking-service:
+        condition: service_started
+      delivery-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
     ports: ["8081:8080"]
 
 volumes:
