@@ -1,147 +1,31 @@
-services:
-  mysql:
-    image: mysql:8.4
-    environment:
-      MYSQL_DATABASE: courier_users
-      MYSQL_USER: courier
-      MYSQL_PASSWORD: courier
-      MYSQL_ROOT_PASSWORD: root-change-me
-    ports: ["3307:3306"]
-    volumes: ["mysql-data:/var/lib/mysql"]
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pcourier"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
 
-  database-setup:
-    image: mysql:8.4
-    depends_on:
-      mysql: {condition: service_healthy}
-    environment:
-      MYSQL_ROOT_PASSWORD: root-change-me
-    volumes:
-      - ./db/create-schemas.sql:/create-schemas.sql:ro
-    command: ["sh", "-c", "mysql -hmysql -uroot -p\"$$MYSQL_ROOT_PASSWORD\" < /create-schemas.sql"]
-    restart: "no"
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 
-  rabbitmq:
-    image: rabbitmq:3.13-management
-    ports: ["5672:5672", "15672:15672"]
-    healthcheck:
-      test: ["CMD", "rabbitmqadmin", "-H", "localhost", "-P", "15672", "-u", "guest", "-p", "guest", "list", "vhosts"]
-      interval: 5s
-      timeout: 10s
-      retries: 20
+WORKDIR /workspace
 
-  user-service:
-    build:
-      context: .
-      args: {APP_MODULE: user-service}
-    depends_on:
-      database-setup: {condition: service_completed_successfully}
-    environment:
-      DB_URL: jdbc:mysql://mysql:3306/courier_users
-      DB_USER: courier
-      DB_PASSWORD: courier
-      ADMIN_EMAIL: admin@courier.local
-      ADMIN_PASSWORD: password
-    healthcheck:
-      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/8081"]
-      interval: 10s
-      timeout: 3s
-      retries: 18
-      start_period: 120s
+ARG APP_MODULE=user-service
 
-  parcel-service:
-    build:
-      context: .
-      args: {APP_MODULE: parcel-service}
-    depends_on:
-      database-setup: {condition: service_completed_successfully}
-      rabbitmq: {condition: service_healthy}
-    environment: &service-env
-      DB_URL: jdbc:mysql://mysql:3306/courier_parcels
-      DB_USER: courier
-      DB_PASSWORD: courier
-      RABBIT_HOST: rabbitmq
-      RABBITMQ_URL: ${RABBITMQ_URL:-}
+COPY . .
 
-  tracking-service:
-    build:
-      context: .
-      args: {APP_MODULE: tracking-service}
-    depends_on:
-      database-setup: {condition: service_completed_successfully}
-      rabbitmq: {condition: service_healthy}
-    environment:
-      <<: *service-env
-      DB_URL: jdbc:mysql://mysql:3306/courier_tracking
+RUN test -f "${APP_MODULE}/pom.xml" \
+    || (echo "Module not found: ${APP_MODULE}" && exit 1)
 
-  delivery-service:
-    build:
-      context: .
-      args: {APP_MODULE: delivery-service}
-    depends_on:
-      database-setup: {condition: service_completed_successfully}
-      rabbitmq: {condition: service_healthy}
-    environment:
-      <<: *service-env
-      DB_URL: jdbc:mysql://mysql:3306/courier_delivery
+RUN mvn -B -Dstyle.color=never -DskipTests \
+    -pl "${APP_MODULE}" -am package
 
-  notification-service:
-    build:
-      context: .
-      args: {APP_MODULE: notification-service}
-    depends_on:
-      database-setup: {condition: service_completed_successfully}
-      rabbitmq: {condition: service_healthy}
-    environment:
-      <<: *service-env
-      DB_URL: jdbc:mysql://mysql:3306/courier_notifications
-      MAIL_ENABLED: ${MAIL_ENABLED:-false}
-      MAIL_HOST: ${MAIL_HOST:-}
-      MAIL_PORT: ${MAIL_PORT:-587}
-      MAIL_USERNAME: ${MAIL_USERNAME:-}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
-      MAIL_FROM: ${MAIL_FROM:-noreply@courier.local}
-      SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
-      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
-      MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_SMTP_STARTTLS_ENABLE:-true}
-      MAIL_RETRY_INTERVAL_MS: ${MAIL_RETRY_INTERVAL_MS:-60000}
-      MAIL_MAX_ATTEMPTS: ${MAIL_MAX_ATTEMPTS:-8}
-      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8081}
+RUN JAR_PATH="$(find "/workspace/${APP_MODULE}/target" \
+    -maxdepth 1 -type f -name "*.jar" \
+    ! -name "original-*.jar" -print -quit)" \
+    && test -n "$JAR_PATH" \
+    && mkdir -p /workspace/runtime \
+    && cp "$JAR_PATH" /workspace/runtime/app.jar
 
-  payment-service:
-    build:
-      context: .
-      args: {APP_MODULE: payment-service}
-    depends_on:
-      database-setup: {condition: service_completed_successfully}
-      rabbitmq: {condition: service_healthy}
-    environment:
-      <<: *service-env
-      DB_URL: jdbc:mysql://mysql:3306/courier_payments
-      PAYMENT_DEMO_AMOUNT: ${PAYMENT_DEMO_AMOUNT:-100.00}
+FROM eclipse-temurin:21-jre
 
-  gateway:
-    build:
-      context: .
-      args: {APP_MODULE: gateway}
-    depends_on:
-      user-service:
-        condition: service_healthy
-      parcel-service:
-        condition: service_started
-      tracking-service:
-        condition: service_started
-      delivery-service:
-        condition: service_started
-      notification-service:
-        condition: service_started
-      payment-service:
-        condition: service_started
-    ports: ["8081:8080"]
+WORKDIR /app
 
-volumes:
-  mysql-data:
+COPY --from=build /workspace/runtime/app.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
