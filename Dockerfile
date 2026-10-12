@@ -19,7 +19,7 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-ARG APP_MODULE
+ARG APP_MODULE=user-service
 
 COPY --from=build /workspace/${APP_MODULE}/target/*.jar app.jar
 
