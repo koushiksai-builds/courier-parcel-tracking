@@ -10,7 +10,12 @@ spring:
       ddl-auto: update
     open-in-view: false
   rabbitmq:
-    host: ${RABBIT_HOST:localhost}
+    host: ${RABBIT_HOST:xcapybara.lmq.cloudamqp.com}
+    port: ${RABBIT_PORT:8883}
+    username: ${RABBIT_USERNAME:xleszxzc:xleszxzc}
+    password: ${RABBIT_PASSWORD:8C-zxuxXzr_6QGIAId-fsAfB8IXqUKrh}
+    ssl:
+      enabled: ${RABBIT_SSL_ENABLED:false}
     listener:
       simple:
         default-requeue-rejected: false
