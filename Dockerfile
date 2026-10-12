@@ -4,7 +4,7 @@ FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /workspace
 COPY . .
 
-ARG APP_MODULE
+ARG APP_MODULE=user-service
 RUN test -n "$APP_MODULE" || (echo "APP_MODULE build argument is required" && exit 1)
 RUN mvn -q -DskipTests package
 
