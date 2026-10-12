@@ -1,37 +1,59 @@
-server.port: ${PORT:8080}
+
+server:
+  port: ${PORT:8080}
+
 spring:
-  application.name: api-gateway
+  application:
+    name: api-gateway
   cloud:
     gateway:
       default-filters:
         - RemoveResponseHeader=WWW-Authenticate
       routes:
         - id: user-auth
-          uri: "http://${USER_SERVICE_HOSTPORT:user-service:8081}"
-          predicates: [Path=/api/auth/**]
+          uri: ${USER_SERVICE_URL:http://user-service:8081}
+          predicates:
+            - Path=/api/auth/**
+
         - id: user-admin
-          uri: "http://${USER_SERVICE_HOSTPORT:user-service:8081}"
-          predicates: ["Path=/api/admin/users,/api/admin/users/**,/api/admin/couriers,/api/admin/couriers/**"]
+          uri: ${USER_SERVICE_URL:http://user-service:8081}
+          predicates:
+            - Path=/api/admin/users,/api/admin/users/**,/api/admin/couriers,/api/admin/couriers/**
+
         - id: parcel-history
           order: -2
-          uri: "http://${TRACKING_SERVICE_HOSTPORT:tracking-service:8083}"
-          predicates: [Path=/api/parcels/*/history]
+          uri: ${TRACKING_SERVICE_URL:http://tracking-service:8083}
+          predicates:
+            - Path=/api/parcels/*/history
+
         - id: parcels
-          uri: "http://${PARCEL_SERVICE_HOSTPORT:parcel-service:8082}"
-          predicates: [Path=/api/parcels/**]
+          uri: ${PARCEL_SERVICE_URL:http://parcel-service:8082}
+          predicates:
+            - Path=/api/parcels/**
+
         - id: parcel-admin-list
-          uri: "http://${PARCEL_SERVICE_HOSTPORT:parcel-service:8082}"
-          predicates: [Path=/api/admin/parcels]
-          filters: [SetPath=/api/parcels/admin/all]
+          uri: ${PARCEL_SERVICE_URL:http://parcel-service:8082}
+          predicates:
+            - Path=/api/admin/parcels
+          filters:
+            - SetPath=/api/parcels/admin/all
+
         - id: tracking
-          uri: "http://${TRACKING_SERVICE_HOSTPORT:tracking-service:8083}"
-          predicates: ["Path=/api/tracking/**,/api/admin/activities,/api/admin/activities/**"]
+          uri: ${TRACKING_SERVICE_URL:http://tracking-service:8083}
+          predicates:
+            - Path=/api/tracking/**,/api/admin/activities,/api/admin/activities/**
+
         - id: delivery
-          uri: "http://${DELIVERY_SERVICE_HOSTPORT:delivery-service:8084}"
-          predicates: ["Path=/api/delivery/**,/api/admin/deliveries,/api/admin/delayed,/api/admin/delayed/**,/api/admin/exceptions,/api/admin/exceptions/**"]
+          uri: ${DELIVERY_SERVICE_URL:http://delivery-service:8084}
+          predicates:
+            - Path=/api/delivery/**,/api/admin/deliveries,/api/admin/delayed,/api/admin/delayed/**,/api/admin/exceptions,/api/admin/exceptions/**
+
         - id: notifications
-          uri: "http://${NOTIFICATION_SERVICE_HOSTPORT:notification-service:8085}"
-          predicates: ["Path=/api/notifications/**,/api/admin/events/failed,/api/admin/events/failed/**,/api/admin/email-deliveries,/api/admin/email-deliveries/**,/api/support/**"]
+          uri: ${NOTIFICATION_SERVICE_URL:http://notification-service:8085}
+          predicates:
+            - Path=/api/notifications/**,/api/admin/events/failed,/api/admin/events/failed/**,/api/admin/email-deliveries,/api/admin/email-deliveries/**,/api/support/**
+
         - id: payments
-          uri: "http://${PAYMENT_SERVICE_HOSTPORT:payment-service:8086}"
-          predicates: ["Path=/api/payments/**"]
+          uri: ${PAYMENT_SERVICE_URL:http://payment-service:8086}
+          predicates:
+            - Path=/api/payments/**
