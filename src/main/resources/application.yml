@@ -2,9 +2,9 @@ server:
   port: ${PORT:8080}
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/courier?createDatabaseIfNotExist=true}
-    username: ${DB_USER:courier}
-    password: ${DB_PASSWORD:courier}
+    url: jdbc:mysql://mysql-2d2b9baa-koushiksai1182004-02b9.i.aivencloud.com:25827/courier_users?sslMode=REQUIRED
+    username: ${DB_USER:avnadmin}
+    password: ${DB_PASSWORD:AVNS_tV81UyS2ZMjAavMiW8Y}
   jpa:
     hibernate:
       ddl-auto: update
