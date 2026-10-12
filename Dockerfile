@@ -2,7 +2,7 @@ FROM maven:3.9.9-eclipse-temurin-21 AS build
 
 WORKDIR /workspace
 
-ARG APP_MODULE
+ARG APP_MODULE=user-service
 
 COPY . .
 
