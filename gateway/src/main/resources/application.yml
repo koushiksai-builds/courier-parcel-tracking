@@ -7,31 +7,31 @@ spring:
         - RemoveResponseHeader=WWW-Authenticate
       routes:
         - id: user-auth
-          uri: http://user-service:8081
+          uri: "http://${USER_SERVICE_HOSTPORT:user-service:8081}"
           predicates: [Path=/api/auth/**]
         - id: user-admin
-          uri: http://user-service:8081
+          uri: "http://${USER_SERVICE_HOSTPORT:user-service:8081}"
           predicates: ["Path=/api/admin/users,/api/admin/users/**,/api/admin/couriers,/api/admin/couriers/**"]
         - id: parcel-history
           order: -2
-          uri: http://tracking-service:8083
+          uri: "http://${TRACKING_SERVICE_HOSTPORT:tracking-service:8083}"
           predicates: [Path=/api/parcels/*/history]
         - id: parcels
-          uri: http://parcel-service:8082
+          uri: "http://${PARCEL_SERVICE_HOSTPORT:parcel-service:8082}"
           predicates: [Path=/api/parcels/**]
         - id: parcel-admin-list
-          uri: http://parcel-service:8082
+          uri: "http://${PARCEL_SERVICE_HOSTPORT:parcel-service:8082}"
           predicates: [Path=/api/admin/parcels]
           filters: [SetPath=/api/parcels/admin/all]
         - id: tracking
-          uri: http://tracking-service:8083
+          uri: "http://${TRACKING_SERVICE_HOSTPORT:tracking-service:8083}"
           predicates: ["Path=/api/tracking/**,/api/admin/activities,/api/admin/activities/**"]
         - id: delivery
-          uri: http://delivery-service:8084
+          uri: "http://${DELIVERY_SERVICE_HOSTPORT:delivery-service:8084}"
           predicates: ["Path=/api/delivery/**,/api/admin/deliveries,/api/admin/delayed,/api/admin/delayed/**,/api/admin/exceptions,/api/admin/exceptions/**"]
         - id: notifications
-          uri: http://notification-service:8085
+          uri: "http://${NOTIFICATION_SERVICE_HOSTPORT:notification-service:8085}"
           predicates: ["Path=/api/notifications/**,/api/admin/events/failed,/api/admin/events/failed/**,/api/admin/email-deliveries,/api/admin/email-deliveries/**,/api/support/**"]
         - id: payments
-          uri: http://payment-service:8086
+          uri: "http://${PAYMENT_SERVICE_HOSTPORT:payment-service:8086}"
           predicates: ["Path=/api/payments/**"]

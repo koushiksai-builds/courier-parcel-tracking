@@ -3,13 +3,14 @@ server:
 spring:
   application.name: parcel-service
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/courier_parcels}
+    url: ${DB_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/courier_parcels?sslMode=${DB_SSL_MODE:DISABLED}}
     username: ${DB_USER:courier}
     password: ${DB_PASSWORD:courier}
   jpa:
     hibernate.ddl-auto: update
     open-in-view: false
   rabbitmq:
+    addresses: ${RABBITMQ_URL:}
     host: ${RABBIT_HOST:localhost}
     listener.simple.default-requeue-rejected: false
     listener.simple.retry.enabled: true

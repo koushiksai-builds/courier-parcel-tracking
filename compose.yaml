@@ -65,6 +65,7 @@ services:
       DB_USER: courier
       DB_PASSWORD: courier
       RABBIT_HOST: rabbitmq
+      RABBITMQ_URL: ${RABBITMQ_URL:-}
 
   tracking-service:
     build:
