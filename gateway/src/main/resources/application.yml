@@ -15,10 +15,11 @@ spring:
           predicates:
             - Path=/api/auth/**
 
+      
         - id: user-admin
           uri: ${USER_SERVICE_URL:http://user-service:8081}
           predicates:
-            - Path=/api/admin/users,/api/admin/users/**,/api/admin/couriers,/api/admin/couriers/**
+            - - Path=/api/auth/**
 
         - id: parcel-history
           order: -2
