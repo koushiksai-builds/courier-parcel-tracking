@@ -210,9 +210,11 @@
   /* Navigation                                                          */
   /* ------------------------------------------------------------------ */
 
+  /* In-page anchors such as #main must not re-route the app. */
   function currentHash() {
     var h = window.location.hash || "#/";
-    return h.replace(/^#/, "") || "/";
+    if (h.charAt(1) !== "/") return null;
+    return h.slice(1) || "/";
   }
 
   function go(path) {
@@ -256,7 +258,7 @@
   }
 
   function renderNav() {
-    var path = currentHash();
+    var path = currentHash() || "/";
     var items = navItems();
     var html = items.map(function (it) {
       var active = path === it.href || (it.href !== "/" && path.indexOf(it.href + "/") === 0);
@@ -1362,6 +1364,7 @@
 
   function render() {
     var path = currentHash();
+    if (!path) return; /* in-page anchor such as #main */
     var main = $("#main");
     navOpen = false;
 
@@ -1683,6 +1686,13 @@
   });
 
   window.addEventListener("hashchange", render);
+
+  /* A real path such as /signin (no #) becomes the matching hash route. */
+  (function () {
+    var path = window.location.pathname.replace(/\/+$/, "").replace(/\/index\.html$/, "");
+    if (!path) return;
+    window.location.replace("/#" + path + window.location.search);
+  })();
 
   if (!window.location.hash) window.location.hash = "/";
   else render();

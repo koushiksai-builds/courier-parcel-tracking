@@ -19,6 +19,9 @@
           <span class="brand__tag">Shipment operations</span>
         </span>
       </a>
+      <div class="header-actions">
+        <a class="btn btn--primary btn--sm" href="/">Back to app</a>
+      </div>
     </div>
   </header>
   <main id="main" tabindex="-1">
@@ -26,10 +29,10 @@
       <div class="page-head"><p class="page-head__eyebrow">404</p><h1>Page not found</h1>
       <p class="page-head__sub">That address does not match any page in this application.</p></div>
       <div class="card"><div class="card__body">
-        <p>The link may be out of date, or the page may have moved. Start again from the tracking page.</p>
+        <p>The link may be out of date. Go back to the tracking page.</p>
         <div class="row" style="margin-top:20px">
           <a class="btn btn--primary" href="/">Track a shipment</a>
-          <a class="btn btn--secondary" href="/#/">Open the app</a>
+          <button class="btn btn--secondary" type="button" onclick="history.length > 1 ? history.back() : location.assign('/')">Go back</button>
         </div>
       </div></div>
     </div>
