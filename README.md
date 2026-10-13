@@ -35,7 +35,8 @@ ever talks to one origin.
 
 ## Deploy (free)
 
-Full walkthrough: see the **Deployment** section below.
+Step-by-step walkthrough: **[DEPLOY.md](DEPLOY.md)**. Live site:
+https://courier-parcel-tracking-frontend.vercel.app
 
 1. Push this repo to GitHub.
 2. Create a free MySQL database on **Aiven** and a free RabbitMQ instance on **CloudAMQP**.
