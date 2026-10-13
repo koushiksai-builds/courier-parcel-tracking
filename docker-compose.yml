@@ -41,6 +41,20 @@ services:
       RABBIT_VHOST: /
       RABBIT_SSL_ENABLED: "false"
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin12345}
+      # Email is opt-in. Without these the app still runs; notification
+      # emails are skipped and the support form returns 503.
+      MAIL_ENABLED: ${MAIL_ENABLED:-false}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
+      MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_SMTP_STARTTLS_ENABLE:-true}
+      MAIL_RETRY_INTERVAL_MS: ${MAIL_RETRY_INTERVAL_MS:-60000}
+      MAIL_MAX_ATTEMPTS: ${MAIL_MAX_ATTEMPTS:-8}
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
     depends_on:
       mysql:
         condition: service_healthy
