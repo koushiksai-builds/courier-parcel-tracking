@@ -633,7 +633,7 @@
     "</div>" +
     (filtered.length
       ? '<div class="ship-list" id="shipList" style="margin-top:16px">' + filtered.map(function (p) {
-          return shipCard(p, "/shipments/" + encodeURIComponent(p.trackingId));
+          return shipCard(p, "#/shipments/" + encodeURIComponent(p.trackingId));
         }).join("") + "</div>"
       : '<div id="shipList" style="margin-top:16px">' +
         emptyState("No matching shipments", "Try a different search term or clear the status filter.", "search") + "</div>");
@@ -657,7 +657,7 @@
       if (count) count.textContent = filtered.length + " of " + parcels.length + " shown";
       if (!list) return;
       list.innerHTML = filtered.length
-        ? filtered.map(function (p) { return shipCard(p, "/shipments/" + encodeURIComponent(p.trackingId)); }).join("")
+        ? filtered.map(function (p) { return shipCard(p, "#/shipments/" + encodeURIComponent(p.trackingId)); }).join("")
         : emptyState("No matching shipments", "Try a different search term or clear the status filter.", "search");
     }
 
