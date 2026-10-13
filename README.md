@@ -1,218 +1,97 @@
-<<<<<<< HEAD
 # Courier Parcel Tracking System
 
-This is a Spring Boot microservices project based on the SRS. The services are built and deployed separately and communicate through the API Gateway, MySQL, and RabbitMQ events.
-
-## Services
-
-| Service | Responsibility | Internal port | MySQL schema |
-|---|---|---:|---|
-| API Gateway | Serves the web UI and routes API requests | 8080 | — |
-| User Service | Registration, login, roles, customers, couriers, and admin user management | 8081 | `courier_users` |
-| Parcel Service | Booking, parcel details, and customer parcel list | 8082 | `courier_parcels` |
-| Tracking Service | Tracking status and history; consumes parcel events | 8083 | `courier_tracking` |
-| Delivery Service | Courier assignment, status updates, delay and exception detection | 8084 | `courier_delivery` |
-| Notification Service | Customer notifications and failed-event review/retry | 8085 | `courier_notifications` |
-| Payment Service | Customer payment orders, demo checkout, and admin payment history | 8086 | `courier_payments` |
-
-Each service is its own Maven module and Spring Boot application. The shared `common` module contains identity and event contracts. RabbitMQ publishes parcel events to the tracking, delivery, notification, and payment queues. Each service stores its tables in its own MySQL database; shared user lookups use `courier_users`.
-
-## Run with Docker Desktop
-
-1. Open PowerShell in this project folder.
-2. Set an admin password for this local run:
-
-   ```powershell
-   $env:ADMIN_PASSWORD = "Choose-A-Strong-Password"
-   ```
-
-3. Build and start the services:
-
-   ```powershell
-   docker compose up --build -d
-   ```
-
-   The first build compiles the Maven modules and may take a few minutes.
-
-   If you already have this project running with its existing MySQL volume, create the new payment schema once before starting:
-
-   ```powershell
-   docker compose run --rm database-setup
-   docker compose up --build -d
-   ```
-
-4. Wait for the services to start, then open **http://localhost:8081**. Docker Compose maps that host port to the API Gateway. The app login is `admin@courier.local` and the password is the value you set in step 2.
-5. Register a customer from the page. The admin can create courier accounts and monitor users, parcels, deliveries, exceptions, activities, and failed events.
-
-After a customer books a parcel, the page creates a checkout order and offers UPI, card, wallet, and cash on delivery. Online methods are demo-only: selecting Pay records a successful payment for the displayed fee without contacting a bank or charging an account. Set `PAYMENT_DEMO_AMOUNT` before `docker compose up` to change the default fee of INR 100.00. Cash on delivery is recorded as `PAY_ON_DELIVERY`.
-
-## Email notifications
-
-The Notification Service keeps saving in-app notifications. Email delivery is optional and is disabled by default. To enable SMTP email, set these environment variables in the same PowerShell window before starting or rebuilding the notification service:
-
-```powershell
-$env:MAIL_ENABLED = "true"
-$env:MAIL_HOST = "smtp.example.com"
-$env:MAIL_PORT = "587"
-$env:MAIL_USERNAME = "your-smtp-username"
-$env:MAIL_PASSWORD = "your-smtp-password"
-$env:MAIL_FROM = "your-verified-sender@example.com"
-$env:MAIL_SMTP_AUTH = "true"
-$env:MAIL_SMTP_STARTTLS_ENABLE = "true"
-$env:PUBLIC_BASE_URL = "http://localhost:8081"
-docker compose up --build -d notification-service
-```
-
-Use the SMTP host, port, credentials, and verified sender supplied by your mail provider. Do not commit real credentials to the project. When SMTP is enabled, parcel events send an email to the parcel customer's registered email address; delivery failures use the existing RabbitMQ retry and failed-event flow.
-
-Useful commands:
-
-```powershell
-docker compose ps
-  docker compose logs -f gateway user-service parcel-service tracking-service delivery-service notification-service payment-service
-docker compose down
-```
-
-`docker compose down` keeps the MySQL data volume. Do not add `--volumes` unless you intend to erase the stored users, parcels, deliveries, tracking history, and notifications.
-
-## Ports
-
-| Host port | Service |
-|---:|---|
-| 8081 | API Gateway and web UI |
-| 3307 | MySQL |
-| 5672 | RabbitMQ AMQP |
-| 15672 | RabbitMQ management UI |
-
-Payment Service listens on port 8086 inside the Compose network and is accessed through the gateway; it does not claim a host port.
-
-Ports 8081 and 3307 are used on the host to avoid the common local conflicts on 8080 and 3306. Backend service ports are only reachable inside the Docker network.
-
-## Build without Docker
-
-Install Java 21, Maven, MySQL, and RabbitMQ. Create the six schemas listed above and grant the `courier` database user access to them. From the repository root:
-
-```powershell
-mvn -DskipTests package
-```
-
-Run the services with their module-specific Spring configuration and environment variables. Set `DB_URL` to the service database: `courier_users` for users, `courier_parcels` for parcels, `courier_tracking` for tracking, `courier_delivery` for deliveries, `courier_notifications` for notifications, and `courier_payments` for payments. Shared user lookups use the `courier_users` database. Set `RABBIT_HOST` for services that publish or consume parcel events.
-
-## SRS endpoint map
-
-- Registration/login: `POST /api/auth/register`, authenticated `GET /api/auth/login`
-- Booking and customer parcels: `POST /api/parcels`, `GET /api/parcels`
-- Tracking: public `GET /api/tracking/{trackingId}`; authenticated history `GET /api/parcels/{trackingId}/history`
-- Delivery: admin `PUT /api/delivery/{trackingId}/assignment`; courier/admin `PUT /api/delivery/{trackingId}/status`; courier `GET /api/delivery/mine`
-- Notifications: `GET /api/notifications/mine`
-- Payment: authenticated customer `GET /api/payments/{trackingId}`, then `POST /api/payments/{trackingId}/pay` with `{"method":"UPI"}`, `CARD`, `WALLET`, or `CASH_ON_DELIVERY`; admin history `GET /api/payments/admin/all`
-- Admin: `GET /api/admin/users`, `/api/admin/parcels`, `/api/admin/delayed`, `/api/admin/exceptions`, `/api/admin/activities`, `/api/admin/events/failed`
-- Failed-event recovery: admin `POST /api/admin/events/failed/{id}/retry`
-
-Delay detection uses a one-hour grace period after the expected delivery time. Prolonged inactivity is defined as 24 hours; the SRS does not specify these thresholds.
-=======
-\# Courier and Parcel Tracking System
-
-
-
-A courier and parcel tracking system built using Microservices and Event-Driven Architecture.
-
-
-
-\## Technology Stack
-
-
+A courier and parcel tracking system built with microservices and event-driven architecture, deployed as a single
+Spring Boot application so it fits on Render's free tier.
 
 | Layer | Technology |
-
 |---|---|
-
-| Backend | Java 21, Spring Boot, Spring Data JPA |
-
-| API Gateway | Spring Cloud Gateway |
-
-| Database | MySQL 8 |
-
-| Messaging | RabbitMQ |
-
-| Frontend | React + Vite (JavaScript/JSX) |
-
+| Backend | Java 21, Spring Boot 3.4, Spring Data JPA |
+| Database | MySQL 8 (Aiven free tier) |
+| Messaging | RabbitMQ (CloudAMQP free tier) |
+| Frontend | Single-page HTML/JS app (Vercel static site) |
 | Build | Maven |
+| Hosting | Render (backend) + Vercel (frontend) |
 
-| Deployment | Docker and Docker Compose |
+## How this repo is laid out
 
+Each microservice is still a Maven module and can be run on its own. The `app` module compiles all of them into one
+Spring Boot application, which is what gets deployed.
 
+| Module | Responsibility |
+|---|---|
+| `app` | **Deployed artifact.** One Spring Boot app containing everything below |
+| `user-service` | Registration, login, roles, customer/courier/admin accounts |
+| `parcel-service` | Booking, shipping cost, customer parcel list |
+| `tracking-service` | Public tracking and history; consumes parcel events |
+| `delivery-service` | Courier assignment, status updates, delay/exception detection |
+| `notification-service` | In-app notifications, optional email, support form |
+| `payment-service` | Demo checkout orders and admin payment history |
+| `gateway` | Spring Cloud Gateway + web UI, for running the services separately |
+| `common` | Shared identity and event contracts |
+| `frontend` | The web UI, deployed as a static site on Vercel |
 
-\## Services and Ports
+The UI calls relative `/api/...` paths. On Vercel a rewrite proxies `/api/*` to the Render service, so the browser only
+ever talks to one origin.
 
+## Deploy (free)
 
+Full walkthrough: see the **Deployment** section below.
 
-| Component | Port | Database |
+1. Push this repo to GitHub.
+2. Create a free MySQL database on **Aiven** and a free RabbitMQ instance on **CloudAMQP**.
+3. On **Render**, create a Blueprint from this repo. It picks up `render.yaml` and builds `Dockerfile`.
+4. Copy the backend URL Render gives you into `frontend/vercel.json`, then deploy the `frontend` folder on **Vercel**.
+5. Log in at the Vercel URL as `admin@courier.local` with the `ADMIN_PASSWORD` you set on Render.
 
-|---|---:|---|
+### Environment variables (set in Render)
 
-| API Gateway | 8080 | - |
+| Variable | Where the value comes from |
+|---|---|
+| `DB_HOST` | Aiven → MySQL → Overview → Host |
+| `DB_PORT` | Aiven → Overview → Port (Aiven uses TLS, e.g. `25827`) |
+| `DB_NAME` | `defaultdb` (created automatically by Aiven) |
+| `DB_USER` | Aiven → Overview → Username (`avnadmin`) |
+| `DB_PASSWORD` | Aiven → Overview → Password |
+| `DB_SSL_MODE` | `REQUIRED` |
+| `RABBIT_HOST` | CloudAMQP → instance → Host |
+| `RABBIT_PORT` | CloudAMQP → Port for TLS (usually `5671`) |
+| `RABBIT_USERNAME` | CloudAMQP → Username |
+| `RABBIT_PASSWORD` | CloudAMQP → Password |
+| `RABBIT_VHOST` | CloudAMQP → Virtual Host |
+| `RABBIT_SSL_ENABLED` | `true` for the `5671` TLS port |
+| `ADMIN_EMAIL` | `admin@courier.local` |
+| `ADMIN_PASSWORD` | Pick a strong password. This is the app's admin login |
+| `PUBLIC_BASE_URL` | Your Vercel URL, e.g. `https://your-app.vercel.app` |
+| `MAIL_ENABLED` | `false` unless you configure SMTP |
+| `SUPPORT_EMAIL` | Inbox that receives the support form |
 
-| User Service | 8081 | courier\_users |
+## Run locally with Docker
 
-| Parcel Service | 8082 | courier\_parcels |
+```powershell
+docker compose up --build
+```
 
-| Tracking Service | 8083 | courier\_tracking |
+Open http://localhost:8080. Log in as `admin@courier.local` / `admin12345` (override with `$env:ADMIN_PASSWORD`).
 
-| Delivery Service | 8084 | courier\_delivery |
+The UI lives in `frontend/index.html`; serve that folder with any static server while developing.
 
-| Notification Service | 8085 | courier\_notifications |
+## Notes on the demo data
 
-| Frontend | 5173 | - |
+- The database schema is created automatically on startup (`spring.jpa.hibernate.ddl-auto: update`). All tables land in
+  the single database named by `DB_NAME`.
+- Online payments are demo-only. Selecting Pay records a successful payment for the displayed fee without contacting a
+  bank. `PAYMENT_DEMO_AMOUNT` changes the default fee of INR 100.00. Cash on delivery is recorded as `PAY_ON_DELIVERY`.
+- Email delivery is off unless `MAIL_ENABLED=true`. Gmail needs an App Password, not your account password.
+- Delay detection uses a one-hour grace period after the expected delivery time. Prolonged inactivity is 24 hours.
 
-| RabbitMQ | 5672\* | - |
+## API endpoints
 
-| RabbitMQ Management UI | 15672\* | - |
-
-| MySQL | 3306 | - |
-
-
-
-\\\* RabbitMQ host ports may be changed later because of Windows port restrictions. The internal Docker RabbitMQ port will remain 5672.
-
-
-
-\## Repository Structure
-
-
-
-```text
-
-courier-parcel-tracking/
-
-├── frontend/
-
-├── api-gateway/
-
-├── user-service/
-
-├── parcel-service/
-
-├── tracking-service/
-
-├── delivery-service/
-
-├── notification-service/
-
-├── docs/
-
-│   ├── architecture/
-
-│   ├── uml/
-
-│   ├── api/
-
-│   └── screenshots/
-
-├── docker-compose.yml
-
-├── .gitignore
-
-└── README.md
-
->>>>>>> fd01c513dc0fde8c52ba6f75f8dbe35fe0ecab7c
+- Registration/login: `POST /api/auth/register`, authenticated `GET /api/auth/login`
+- Booking and customer parcels: `POST /api/parcels`, `GET /api/parcels`, `POST /api/parcels/calculate-cost`
+- Tracking: public `GET /api/tracking/{trackingId}`; authenticated `GET /api/parcels/{trackingId}/history`
+- Delivery: admin `PUT /api/delivery/{trackingId}/assignment`; courier/admin `PUT /api/delivery/{trackingId}/status`; courier `GET /api/delivery/mine`
+- Notifications: `GET /api/notifications/mine`, `GET /api/notifications/history`, `POST /api/notifications/mine/clear`
+- Payment: `GET /api/payments/{trackingId}`, then `POST /api/payments/{trackingId}/pay` with `{"method":"UPI"}`, `CARD`, `WALLET`, `CASH_ON_DELIVERY` or `DECLINE`
+- Admin: `GET /api/admin/users`, `/api/admin/parcels`, `/api/admin/deliveries`, `/api/admin/delayed`, `/api/admin/exceptions`, `/api/admin/activities`, `/api/admin/events/failed`, `/api/admin/email-deliveries`, `/api/payments/admin/all`
+- Failed-event recovery: admin `POST /api/admin/events/failed/{id}/retry`
+- Support form: authenticated `POST /api/support/contact`

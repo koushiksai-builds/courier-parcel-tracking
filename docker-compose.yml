@@ -1,2 +1,48 @@
-# Docker Compose configuration will be completed during the Docker phase.
-services: {}
+# Local development only. Production is a single container on Render (see render.yaml).
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: defaultdb
+      MYSQL_USER: courier
+      MYSQL_PASSWORD: courier
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: defaultdb
+      DB_USER: courier
+      DB_PASSWORD: courier
+      DB_SSL_MODE: DISABLED
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: "5672"
+      RABBIT_USERNAME: guest
+      RABBIT_PASSWORD: guest
+      RABBIT_VHOST: /
+      RABBIT_SSL_ENABLED: "false"
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin12345}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy

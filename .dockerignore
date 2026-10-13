@@ -2,3 +2,7 @@ target/
 **/target/
 .git/
 .github/
+frontend/
+docs/
+*.md
+build-log.txt

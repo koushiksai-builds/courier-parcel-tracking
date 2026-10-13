@@ -1,0 +1,68 @@
+server:
+  port: ${PORT:8080}
+  tomcat:
+    threads:
+      max: ${SERVER_TOMCAT_THREADS_MAX:50}
+    max-connections: 200
+
+spring:
+  application:
+    name: courier-parcel-tracking
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:defaultdb}?sslMode=${DB_SSL_MODE:REQUIRED}&allowPublicKeyRetrieval=true
+    username: ${DB_USER:courier}
+    password: ${DB_PASSWORD:courier}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_PASSWORD:guest}
+    virtual-host: ${RABBIT_VHOST:/}
+    ssl:
+      enabled: ${RABBIT_SSL_ENABLED:false}
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 5
+          multiplier: 2
+
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${MAIL_SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${MAIL_SMTP_STARTTLS_ENABLE:true}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+
+admin:
+  email: ${ADMIN_EMAIL:admin@courier.local}
+  password: ${ADMIN_PASSWORD:admin-change-me}
+
+notifications:
+  email:
+    enabled: ${MAIL_ENABLED:false}
+    from: ${MAIL_FROM:noreply@courier.local}
+    retry-interval-ms: ${MAIL_RETRY_INTERVAL_MS:60000}
+    max-attempts: ${MAIL_MAX_ATTEMPTS:8}
+  public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
+
+support:
+  email:
+    recipient: ${SUPPORT_EMAIL:}
+
+payments:
+  demo-amount: ${PAYMENT_DEMO_AMOUNT:100.00}

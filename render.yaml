@@ -1,0 +1,44 @@
+# Render Blueprint: one free web service running the whole backend.
+services:
+  - type: web
+    name: courier-parcel-tracking
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        value: defaultdb
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSL_MODE
+        value: REQUIRED
+      - key: RABBIT_HOST
+        sync: false
+      - key: RABBIT_PORT
+        sync: false
+      - key: RABBIT_USERNAME
+        sync: false
+      - key: RABBIT_PASSWORD
+        sync: false
+      - key: RABBIT_VHOST
+        sync: false
+      - key: RABBIT_SSL_ENABLED
+        sync: false
+      - key: ADMIN_EMAIL
+        value: admin@courier.local
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: MAIL_ENABLED
+        value: "false"
+      - key: SUPPORT_EMAIL
+        sync: false

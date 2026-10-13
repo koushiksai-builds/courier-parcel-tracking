@@ -2,26 +2,21 @@ FROM maven:3.9.9-eclipse-temurin-21 AS build
 
 WORKDIR /workspace
 
-ARG APP_MODULE=user-service
-
 COPY . .
 
-RUN if [ -z "$APP_MODULE" ]; then echo "APP_MODULE build argument is required"; exit 2; fi \
-    && mvn -B -Dstyle.color=never -DskipTests -pl "$APP_MODULE" -am package
+RUN mvn -B -Dstyle.color=never -DskipTests -pl app -am package
 
-RUN test -f "/workspace/${APP_MODULE}/pom.xml" || \
-    (echo "Module not found: ${APP_MODULE}" && exit 1)
-
-RUN find "/workspace/${APP_MODULE}/target" -maxdepth 1 -type f -name "*.jar" \
-    ! -name "original-*.jar" -print
+RUN JAR_PATH="$(find /workspace/app/target -maxdepth 1 -type f -name "*.jar" -print -quit)" \
+    && test -n "$JAR_PATH" \
+    && cp "$JAR_PATH" /workspace/app.jar
 
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-ARG APP_MODULE=user-service
+ENV JAVA_TOOL_OPTIONS="-Xms128m -Xmx320m"
 
-COPY --from=build /workspace/${APP_MODULE}/target/*.jar app.jar
+COPY --from=build /workspace/app.jar app.jar
 
 EXPOSE 8080
 
