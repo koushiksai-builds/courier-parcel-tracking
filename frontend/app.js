@@ -1351,7 +1351,12 @@
 
   function formData(form) {
     var out = {};
-    Array.prototype.forEach.call(new FormData(form).entries(), function (pair) { out[pair[0]] = pair[1]; });
+    var entries = new FormData(form).entries();
+    var step = entries.next();
+    while (!step.done) {
+      out[step.value[0]] = step.value[1];
+      step = entries.next();
+    }
     return out;
   }
 
