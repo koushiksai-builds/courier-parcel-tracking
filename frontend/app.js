@@ -603,37 +603,70 @@
           '<p style="margin-top:16px"><a class="btn btn--primary" href="#/book">Book a parcel</a></p>';
         return;
       }
-      var state = tableState.shipments || (tableState.shipments = { q: "", f: "", page: 1 });
-      var filtered = parcels.filter(function (p) {
-        var matchesQ = !state.q || [p.trackingId, p.receiverName, p.receiverAddress, p.description]
-          .some(function (v) { return String(v || "").toLowerCase().indexOf(state.q.toLowerCase()) !== -1; });
-        var matchesF = !state.f || p.status === state.f;
-        return matchesQ && matchesF;
-      });
-      body.innerHTML =
-        '<div class="table-toolbar" role="search">' +
-          '<div class="table-toolbar__search">' + icon("search", "icon-sm") +
-            '<label class="visually-hidden" for="ship-search">Search shipments</label>' +
-            '<input id="ship-search" type="search" placeholder="Search tracking ID, recipient or address" value="' + esc(state.q) + '" /></div>' +
-          '<label class="visually-hidden" for="ship-filter">Filter by status</label>' +
-          '<select id="ship-filter"><option value="">All statuses</option>' +
-            Object.keys(STATUS_LABEL).map(function (s) {
-              return '<option value="' + esc(s) + '"' + (state.f === s ? " selected" : "") + ">" + esc(STATUS_LABEL[s]) + "</option>";
-            }).join("") +
-          "</select>" +
-          '<span class="table-toolbar__count">' + filtered.length + " of " + parcels.length + " shown</span>" +
-        "</div>" +
-        (filtered.length
-          ? '<div class="ship-list" style="margin-top:16px">' + filtered.map(function (p) {
-              return shipCard(p, "/shipments/" + encodeURIComponent(p.trackingId));
-            }).join("") + "</div>"
-          : emptyState("No matching shipments", "Try a different search term or clear the status filter.", "search"));
-
-      $("#ship-search").addEventListener("input", function (e) { state.q = e.target.value; loadShipments(); });
-      $("#ship-filter").addEventListener("change", function (e) { state.f = e.target.value; loadShipments(); });
+      body.innerHTML = shipListHtml(parcels);
+      wireShipList(parcels);
     }).catch(function (err) {
       body.innerHTML = '<div class="alert alert--error">' + icon("alert-circle") + "<span>Could not load shipments: " + esc(err.message) + "</span></div>";
     });
+  }
+
+  function shipListHtml(parcels) {
+    var state = tableState.shipments || (tableState.shipments = { q: "", f: "" });
+    var q = String(state.q || "").trim().toLowerCase();
+    var filtered = parcels.filter(function (p) {
+      var matchesQ = !q || [p.trackingId, p.receiverName, p.receiverAddress, p.description]
+        .some(function (v) { return String(v || "").toLowerCase().indexOf(q) !== -1; });
+      var matchesF = !state.f || p.status === state.f;
+      return matchesQ && matchesF;
+    });
+    return '<div class="table-toolbar" role="search">' +
+      '<div class="table-toolbar__search">' + icon("search", "icon-sm") +
+        '<label class="visually-hidden" for="ship-search">Search shipments</label>' +
+        '<input id="ship-search" type="search" placeholder="Search tracking ID, recipient or address" value="' + esc(state.q) + '" /></div>' +
+      '<label class="visually-hidden" for="ship-filter">Filter by status</label>' +
+      '<select id="ship-filter"><option value="">All statuses</option>' +
+        Object.keys(STATUS_LABEL).map(function (s) {
+          return '<option value="' + esc(s) + '"' + (state.f === s ? " selected" : "") + ">" + esc(STATUS_LABEL[s]) + "</option>";
+        }).join("") +
+      "</select>" +
+      '<span class="table-toolbar__count">' + filtered.length + " of " + parcels.length + " shown</span>" +
+    "</div>" +
+    (filtered.length
+      ? '<div class="ship-list" id="shipList" style="margin-top:16px">' + filtered.map(function (p) {
+          return shipCard(p, "/shipments/" + encodeURIComponent(p.trackingId));
+        }).join("") + "</div>"
+      : '<div id="shipList" style="margin-top:16px">' +
+        emptyState("No matching shipments", "Try a different search term or clear the status filter.", "search") + "</div>");
+  }
+
+  function wireShipList(parcels) {
+    var state = tableState.shipments;
+    var list = $("#shipList");
+    var count = $(".table-toolbar__count");
+    var input = $("#ship-search");
+    var sel = $("#ship-filter");
+
+    function repaint() {
+      var q = String(state.q || "").trim().toLowerCase();
+      var filtered = parcels.filter(function (p) {
+        var matchesQ = !q || [p.trackingId, p.receiverName, p.receiverAddress, p.description]
+          .some(function (v) { return String(v || "").toLowerCase().indexOf(q) !== -1; });
+        var matchesF = !state.f || p.status === state.f;
+        return matchesQ && matchesF;
+      });
+      if (count) count.textContent = filtered.length + " of " + parcels.length + " shown";
+      if (!list) return;
+      list.innerHTML = filtered.length
+        ? filtered.map(function (p) { return shipCard(p, "/shipments/" + encodeURIComponent(p.trackingId)); }).join("")
+        : emptyState("No matching shipments", "Try a different search term or clear the status filter.", "search");
+    }
+
+    if (input) {
+      input.addEventListener("input", function () { state.q = input.value; repaint(); });
+    }
+    if (sel) {
+      sel.addEventListener("change", function () { state.f = sel.value; repaint(); });
+    }
   }
 
   function viewShipmentDetail(id) {
@@ -649,23 +682,15 @@
   function loadShipmentDetail(id) {
     var box = $("#shipmentDetail");
     if (!box) return;
+    function optional(p) { return p.catch(function () { return null; }); }
     Promise.all([
-      api("/parcels"),
-      api("/parcels/" + encodeURIComponent(id) + "/history"),
-      api("/payments/" + encodeURIComponent(id))
+      api("/parcels/" + encodeURIComponent(id)),
+      optional(api("/parcels/" + encodeURIComponent(id) + "/history")),
+      optional(api("/payments/" + encodeURIComponent(id)))
     ]).then(function (results) {
-      var parcels = results[0] || [];
+      var p = results[0];
       var history = results[1] || [];
-      var payment = results[2] || null;
-      var p = null;
-      for (var i = 0; i < parcels.length; i++) {
-        if (parcels[i].trackingId === id) { p = parcels[i]; break; }
-      }
-      if (!p) {
-        box.innerHTML = '<div class="alert alert--error">' + icon("alert-circle") +
-          "<span>This shipment does not exist or belongs to another account.</span></div>";
-        return;
-      }
+      var payment = results[2];
       box.innerHTML =
         '<div class="row row--between" style="margin-bottom:16px">' + statusBadge(p.status) +
           '<span class="small muted">Booked ' + esc(fmtDate(p.createdAt)) + "</span></div>" +
