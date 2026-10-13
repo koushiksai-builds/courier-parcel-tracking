@@ -56,7 +56,7 @@ Add this to parcel, tracking, delivery, notification, and payment services:
 RABBITMQ_URL=amqps://<CloudAMQP-generated connection URL>
 ```
 
-The user service does not use RabbitMQ. The notification service also needs its existing mail variables (`MAIL_ENABLED`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, and `SUPPORT_EMAIL`) if you want email notifications/support to work in production.
+The user service does not use RabbitMQ. The notification service also needs `MAIL_ENABLED`, `SENDGRID_API_KEY`, `MAIL_FROM`, `MAIL_FROM_NAME`, and `SUPPORT_EMAIL` if you want email notifications/support to work in production. Delivery goes through the SendGrid HTTPS API; Render free instances block outbound SMTP.
 
 In the gateway's environment, set each `*_HOSTPORT` variable to the private address and port shown by Render for the matching service (format `hostname:port`, with no `http://`):
 

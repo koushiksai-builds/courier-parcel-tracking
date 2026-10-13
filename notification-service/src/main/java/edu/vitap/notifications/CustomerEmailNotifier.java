@@ -4,14 +4,10 @@ import edu.vitap.common.AppUser;
 import edu.vitap.common.ParcelEvent;
 import edu.vitap.common.PaymentNotificationEvent;
 import edu.vitap.common.UserRepository;
-import jakarta.mail.internet.MimeMessage;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
@@ -24,10 +20,9 @@ class CustomerEmailNotifier {
     private final String publicBaseUrl;
     private final UserRepository users;
     private final EmailDeliveryRepository deliveries;
-    private final ObjectProvider<JavaMailSender> mailSenders;
+    private final SendGridEmailClient sendGrid;
     private final int maxAttempts;
-    private final String smtpUsername;
-    private final String smtpPassword;
+    private final String redactedSecret;
 
     CustomerEmailNotifier(
             @Value("${notifications.email.enabled:false}") boolean enabled,
@@ -35,19 +30,17 @@ class CustomerEmailNotifier {
             @Value("${notifications.public-base-url:http://localhost:8081}") String publicBaseUrl,
             UserRepository users,
             EmailDeliveryRepository deliveries,
-            ObjectProvider<JavaMailSender> mailSenders,
+            SendGridEmailClient sendGrid,
             @Value("${notifications.email.max-attempts:8}") int maxAttempts,
-            @Value("${spring.mail.username:}") String smtpUsername,
-            @Value("${spring.mail.password:}") String smtpPassword) {
+            @Value("${notifications.email.sendgrid.api-key:}") String sendGridApiKey) {
         this.enabled = enabled;
         this.from = from;
         this.publicBaseUrl = publicBaseUrl;
         this.users = users;
         this.deliveries = deliveries;
-        this.mailSenders = mailSenders;
+        this.sendGrid = sendGrid;
         this.maxAttempts = maxAttempts;
-        this.smtpUsername = smtpUsername;
-        this.smtpPassword = smtpPassword;
+        this.redactedSecret = sendGridApiKey == null ? "" : sendGridApiKey.trim();
     }
 
     @Transactional
@@ -121,15 +114,7 @@ class CustomerEmailNotifier {
                 }
                 delivery.recipient = customer.getEmail();
             }
-            JavaMailSender mailSender = mailSenders.getIfAvailable();
-            if (mailSender == null) throw new IllegalStateException("SMTP mail sender is not configured");
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
-            helper.setFrom(from);
-            helper.setTo(delivery.recipient);
-            helper.setSubject(delivery.subject);
-            helper.setText(delivery.htmlBody, true);
-            mailSender.send(message);
+            sendGrid.send(new OutboundEmail(delivery.recipient, delivery.subject, delivery.htmlBody, null));
             delivery.status = "SENT";
             delivery.sentAt = Instant.now();
         } catch (Exception ex) {
@@ -149,8 +134,7 @@ class CustomerEmailNotifier {
 
     private String errorDetails(Exception ex) {
         String message = ex.getMessage() == null ? "No additional error details" : ex.getMessage();
-        if (!smtpUsername.isBlank()) message = message.replace(smtpUsername, "[redacted]");
-        if (!smtpPassword.isBlank()) message = message.replace(smtpPassword, "[redacted]");
+        if (!redactedSecret.isBlank()) message = message.replace(redactedSecret, "[redacted]");
         String details = ex.getClass().getSimpleName() + ": " + message;
         return details.substring(0, Math.min(2000, details.length()));
     }

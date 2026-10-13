@@ -40,5 +40,7 @@ services:
         sync: false
       - key: MAIL_ENABLED
         value: "false"
+      - key: SENDGRID_API_KEY
+        sync: false
       - key: SUPPORT_EMAIL
         sync: false

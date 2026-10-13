@@ -4,7 +4,7 @@ Customers can send a support request from the Customer Support card after signin
 
 ## Configuration
 
-Set SUPPORT_EMAIL in the private project-root .env file to the support inbox. Keep .env private and out of Git. The source-controlled .env.example contains placeholders only. Existing MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, and MAIL_FROM values configure SMTP delivery.
+Set SUPPORT_EMAIL in the private project-root .env file to the support inbox. Keep .env private and out of Git. The source-controlled .env.example contains placeholders only. Email delivery uses the SendGrid HTTPS API (`SENDGRID_API_KEY`, `MAIL_ENABLED`, `MAIL_FROM`, `MAIL_FROM_NAME`). Render free instances cannot use SMTP.
 
 After changing configuration, rebuild and restart the gateway and notification service:
 
