@@ -11,7 +11,7 @@ User's browser
 https://courier-parcel-tracking-frontend.vercel.app     <- Vercel, static frontend
    |  /api/* is rewritten to
    v
-https://courier-parcel-tracking-13q3.onrender.com          <- Render, one Spring Boot app (free, 512MB)
+https://courier-parcel-tracking-1.onrender.com          <- Render, one Spring Boot app (free, 512MB)
    |                    |
    v                    v
 Aiven MySQL (free)    CloudAMQP RabbitMQ (free)
@@ -101,7 +101,7 @@ to `frontend`. `frontend/vercel.json` does the work:
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://courier-parcel-tracking-13q3.onrender.com/api/:path*"
+      "destination": "https://courier-parcel-tracking-1.onrender.com/api/:path*"
     }
   ]
 }
